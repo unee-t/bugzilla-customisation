@@ -11,19 +11,19 @@
   #%]
 
 [% ################################################# %]
-[% #   LMB Hack - include file for ipi terms       # %]
+[% #   FBO Hack - include file for ipi terms       # %]
 [% #################################################%]
 
 [% PROCESS "ipi/variables.ipi.tmpl" %]
 
 [% ################################################# %]
-[% #   END LMB Hack - include file for ipi terms   # %]
+[% #   END FBO Hack - include file for ipi terms   # %]
 [% #################################################%]
 
 [% PROCESS global/header.html.tmpl
    title = "$terms.Bugzilla Main Page"
    header = "Main Page" 
-   header_addl_info = "version 1.10.5.0.2.3.0_DEMO"
+   header_addl_info = "version 2.4_DEMO"
 %]
 
 [% IF release %]
@@ -94,7 +94,7 @@
           [% END %]
       </li>
 		[% ####################################################################### %]
-		[% #   LMB Hack - replace standard links by links to intranet for doc.   # %]
+		[% #   FBO Hack - replace standard links by links to intranet for doc.   # %]
 		[% ####################################################################### %]
 		  
 		  <li>
@@ -118,7 +118,7 @@
     </form>
 
 			[% ####################################################################### %]
-			[% #   LMB Hack - replace standard links by links to intranet for doc.   # %]
+			[% #   FBO Hack - replace standard links by links to intranet for doc.   # %]
 			[% ####################################################################### %]
 
            <div align="center">
@@ -138,7 +138,7 @@
   </div>
 
 [% ################################################################################# %]
-[% #   LMB Hack - remove the whole div common_queries and move it to the footer    # %]
+[% #   FBO Hack - remove the whole div common_queries and move it to the footer    # %]
 [% ################################################################################# %]
 
 
