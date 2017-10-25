@@ -1,0 +1,22 @@
+version: '2'
+services:
+    bugzilla:
+      image: uneet/bugzilla-customisation
+      restart: on-failure
+      ports:
+        - 80:80
+      environment:
+            SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
+            SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
+            SES_VERIFIED_SENDER: ${SES_VERIFIED_SENDER}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_PORT: ${MYSQL_PORT}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      logging:
+            driver: awslogs
+            options:
+              awslogs-region: ap-southeast-1
+              awslogs-group: bugzilla
