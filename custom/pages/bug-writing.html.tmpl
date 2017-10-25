@@ -1,0 +1,80 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% PROCESS "ipi/variables.ipi.tmpl" %]
+[% INCLUDE global/header.html.tmpl title = "$terms.Bug Writing Guidelines" %]
+
+  <p>Effective [% terms.bug %] reports are the best way to fix a claim fast. 
+  These guidelines explain how to write such reports.
+
+<h3>Principles</h3>
+
+  <ul>
+    <li>Be precise</li>
+    <li>Be clear - explain it in details so others can understand the [% terms.bug %] easily</li>
+    <li>One [% terms.bug %] per report</li>
+    <li>No [% terms.bug %] is too trivial to report - 
+    small [% terms.bugs %] may hide big [% terms.bugs %]</li>
+    <li>Clearly separate fact from speculation</li>
+  </ul>
+
+<h3>Preliminaries</h3>
+
+<ol>
+<!--
+  <li>Reproduce your [% terms.bug %] using a recent build of the
+  software, to see whether it has already been fixed.
+  </li>
+-->
+  <li><a href="query.cgi?format=specific">Search</a> 
+  [% terms.Bugzilla %], to see whether your [% terms.bug %] has
+  already been reported.</li>
+</ol>
+
+<h3>Reporting a New [% terms.Bug %]</h3>
+<!--
+<p>If you have reproduced the [% terms.bug %] in a recent build and 
+no-one else appears to have reported it, then:</p>
+-->
+<ol>
+ <li>Choose 
+ "<a href="enter_bug.cgi">Enter a new [% terms.bug %]</a>"</li>
+ <li>Select the [% ipi_terms.product %] in which you've found the [% terms.bug %]</li>
+ <li>Fill out the form. Here is some help understanding it:</li>
+</ol>
+
+  <blockquote>
+    <p><b>[% ipi_terms.Component %]:</b> In which [% ipi_terms.Component %] does this exist?<br>
+    This field is required.
+    Click the word "[% ipi_terms.Component %]" to see a description of each 
+    [% ipi_terms.Component %]. If none seems appropriate, look for a "General" [% ipi_terms.Component %].</p>
+
+    <p><b>[% field_descs.op_sys FILTER html %]:</b> Which [% ipi_terms.OperatingSystem %] did this belogs to?
+    (e.g. Linux, Windows XP, Mac OS X.)<br>
+    If you know the [% terms.bug %] happens on more than one type of 
+    [% ipi_terms.OperatingSystem %], choose <em>[% display_value("op_sys", "All") FILTER html %]</em>. 
+    If your [% field_descs.op_sys FILTER html %] isn't listed, choose 
+    <em>[% display_value("op_sys", "Other") FILTER html %]</em>.</p>
+
+    <p><b>Summary:</b> How would you describe the [% terms.bug %], in 
+    approximately 60 or fewer characters?<br>
+     A good summary should <b>quickly and uniquely identify [% terms.abug %]
+    report</b>.
+    
+    <b>Description:</b>
+    The details of your [% terms.Bug %] report, 
+
+      <p><b>Additional Information:</b> Any other useful information.
+
+  <p>Double-check your report for errors and omissions, then press "Commit".
+  Your [% terms.bug %] will now be in 
+  the [% terms.Bugzilla %] database.<br>
+  </p>
+</blockquote>
+
+[% INCLUDE global/footer.html.tmpl %]

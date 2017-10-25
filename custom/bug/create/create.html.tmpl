@@ -1,0 +1,1095 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+  
+[% ################################################# %]
+[% #   LMB Hack - include file for ipi terms       # %]
+[% #################################################%]
+
+[% PROCESS "ipi/variables.ipi.tmpl" %]
+
+[% ################################################# %]
+[% #   END LMB Hack - include file for ipi terms   # %]
+[% #################################################%]
+
+[% title = BLOCK %]Enter [% terms.Bug %]: [% product.name FILTER html %][% END %]
+[% use_qa_contact = Param("useqacontact") %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  generate_api_token = 1
+  yui = [ 'autocomplete', 'calendar', 'datatable', 'button' ]
+  style_urls = ['skins/standard/bug.css']
+  javascript_urls = [ "js/attachment.js", "js/util.js",
+                      "js/field.js", "js/TUI.js", "js/bug.js" ]
+  onload = "set_assign_to($use_qa_contact); hideElementById('attachment_true');
+            showElementById('attachment_false'); showElementById('btn_no_attachment');"
+%]
+
+<script type="text/javascript">
+	<!--
+	var initialowners = new Array([% product.components.size %]);
+	var last_initialowner;
+	var initialccs = new Array([% product.components.size %]);
+	var components = new Array([% product.components.size %]);
+	var comp_desc = new Array([% product.components.size %]);
+	var flags = new Array([% product.components.size %]);
+	[% IF Param("useqacontact") %]
+		var initialqacontacts = new Array([% product.components.size %]);
+		var last_initialqacontact;
+	[% END %]
+	[% count = 0 %]
+	[%- FOREACH c = product.components %]
+		[% NEXT IF NOT c.is_active %]
+		components[[% count %]] = "[% c.name FILTER js %]";
+		comp_desc[[% count %]] = "[% c.description FILTER html_light FILTER js %]";
+		initialowners[[% count %]] = "[% c.default_assignee.login FILTER js %]";
+		[% flag_list = [] %]
+		[% FOREACH f = c.flag_types.bug %]
+		  [% NEXT UNLESS f.is_active %]
+		  [% flag_list.push(f.id) %]
+		[% END %]
+		[% FOREACH f = c.flag_types.attachment %]
+		  [% NEXT UNLESS f.is_active %]
+		  [% flag_list.push(f.id) %]
+		[% END %]
+		flags[[% count %]] = [[% flag_list.join(",") FILTER js %]];
+		[% IF Param("useqacontact") %]
+			initialqacontacts[[% count %]] = "[% c.default_qa_contact.login FILTER js %]";
+		[% END %]
+
+		[% SET initial_cc_list = [] %]
+		[% FOREACH cc_user = c.initial_cc %]
+		  [% initial_cc_list.push(cc_user.login) %]
+		[% END %]
+		initialccs[[% count %]] = "[% initial_cc_list.join(', ') FILTER js %]";
+
+		[% count = count + 1 %]
+	[%- END %]
+
+	var status_comment_required = new Array();
+	[% FOREACH status = bug_status %]
+	  status_comment_required['[% status.name FILTER js %]'] = 
+		[% status.comment_required_on_change_from() ? 'true' : 'false' %]
+	[% END %]
+
+	TUI_alternates['expert_fields'] = 'Show Advanced Fields';
+	// Hide the Advanced Fields by default, unless the user has a cookie
+	// that specifies otherwise.
+	TUI_hide_default('expert_fields');
+	// Also hide the "Paste text as attachment" textarea by default.
+	TUI_hide_default('attachment_text_field');
+	-->
+</script>
+
+[%############################################################################%]
+[%# This is where we can organize the display order                          #%]
+[%# Not all the display option are modified there                            #%]
+[%# some are in the Preferences in the BZ interface                          #%]
+[%# some are linked to the sortkey of the field (custom fields)              #%]
+[%# some are linked to the CSS class and the custom field naming convention  #%]
+[%############################################################################%]
+
+<form name="Create" id="Create" method="post" action="post_bug.cgi" class="enter_bug_form" enctype="multipart/form-data" onsubmit="return validateEnterBug(this)">
+	<input type="hidden" name="product" value="[% product.name FILTER html %]">
+	<input type="hidden" name="token" value="[% token FILTER html %]">
+	<input type="hidden" name="form_name" value="enter_bug">
+	<div class="row">
+		<div class="row">
+			<p>
+				[% PROCESS 'bug/create/user-message.html.tmpl' %]
+			</p>
+			<p>
+				[% INCLUDE bug/field.html.tmpl
+				bug = default, field = bug_fields.product, editable = 0,
+				value = product.name %]
+
+				[% INCLUDE bug/field.html.tmpl
+				bug = default, field = bug_fields.reporter, editable = 0,
+				value = user.login %]
+			  
+				(<span class="required_star">*</span> =
+				<span class="required_explanation">Required Field</span>)
+			</p>
+			<div class="collapse-controller">
+				<a id="expert_fields_controller" class="controller bz_default_hidden" href="javascript:TUI_toggle_class('expert_fields')">
+					Hide Advanced Fields
+				</a>
+				[%# Show the link if the browser supports JS %]
+				<script type="text/javascript">
+					YAHOO.util.Dom.removeClass('expert_fields_controller', 
+											'bz_default_hidden');
+				</script>
+			</div>
+		</div>
+		<div class="row">
+		[%# We cannot use the select block in these two cases for various reasons. %]
+			<div class="col-md-5">
+				<div class="bug-field-grid bz_field_lmb_not_broken">
+				  [% PROCESS section_component %]
+				</div>
+				<div class="bug-field-grid bz_field_lmb_not_broken">
+				  [% PROCESS section_component_description %]
+				</div>
+				<div class="bug-field-grid bz_field_lmb_not_broken">
+					[% PROCESS section_customfields_with_keyword_clust_8 %]				
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="bug-field-grid">
+					[% PROCESS section_severity %]
+				</div>
+				<div class="expert_fields bug-field-grid">
+					[% PROCESS section_choose_priority %]
+				</div>
+				<div class="bug-field-grid">
+					[% PROCESS section_rep_platform %]
+				</div>
+				<div class="bug-field-grid">
+					[% PROCESS section_customfields_with_keyword_clust_6 %]
+				</div>
+			</div>
+			<div class="col-md-3">
+				<div class="bug-field-grid bz_field_lmb_not_broken">
+					[% PROCESS section_customfields_with_keyword_clust_2 %]
+				</div>
+				<div class="bug-field-grid bz_field_lmb_not_broken">
+					[% PROCESS section_op_sys %]
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="expert_fields">
+				<div class="col-md-6">				
+					<div class="bug-field-grid">
+						[% PROCESS section_status %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_assignee %]
+						[% PROCESS section_spacer %]
+						[% PROCESS section_qa %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_choose_cc %]
+						[%# We do not use default CC %]
+						[%# We need default CC though so Js works as expected %]
+						[% PROCESS section_default_cc %]
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="bug-field-grid collapse-controller">
+					  <a href="javascript:void(0);" data-toggle="collapse" data-target="#timetracking" class="default-open" style="display:inherit;">Timetracking</a>
+					</div>
+					<div id="timetracking" class="collapse in">
+						<div class="bug-field-grid bz_field_lmb_not_broken">
+							[% PROCESS section_timetracking %]
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row static-children">
+		<div class="col-md-6">
+			<div class="bug-field-grid">
+				[% PROCESS section_summary %]
+			</div>
+			<div class="bug-field-grid">
+				[% PROCESS section_description %]
+			</div>
+			<div class="bug-field-grid">
+				[% PROCESS section_customfields_with_keyword_clust_1 %]
+			</div>
+		</div>
+		<div class="col-md-6">
+			<div class="bug-field-grid expert_fields">
+				<div class="bug-field-grid collapse-controller">
+				  <a href="javascript:void(0);" data-toggle="collapse" data-target="#moreinfo" class="default-open" style="display:inherit;">More Details</a>
+				</div>
+				<div id="moreinfo" class="collapse in">
+					<div class="bug-field-grid">
+						[% PROCESS section_alias %]
+					</div>
+					<div class="bug-field-grid bz_field_lmb_not_broken">
+						[% PROCESS section_url %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_keywords %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_dependson %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_blocks %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_see_also %]
+					</div>
+					<div class="bug-field-grid">
+						[% PROCESS section_restrict_visibility %]
+					</div>						
+				</div>
+			</div>
+			<div class="bug-field-grid expert_fields">
+				[% PROCESS section_flags %]
+			</div>
+		</div>
+	</div>
+	<div class="row static-children">
+		<div class="col-md-12">
+			<div class="bug-field-grid">
+				[% PROCESS section_attachment %]
+			</div>
+		</div>
+	</div>	
+	<div class="row static-children">
+		<div class="col-md-12">
+			<div class="bug-field-grid expert_fields">
+				[% PROCESS section_customfields_with_keyword_clust_6 %]
+				[% PROCESS section_customfields %]
+			</div>
+			<div class="bug-field-grid expert_fields" style="display:none;">
+				[%# the version is needed but we do not use it. %]
+				[% PROCESS section_version %]
+				[%# We do not use Target Milestone - no need to clutter the interface this is commented out %]
+				[%# PROCESS section_target_milestone %]	
+			</div>
+			<div class="bug-field-grid">
+				[%# Form controls for entering additional data about the bug being created. %]
+				[% Hook.process("form") %]
+			<div>
+				[% PROCESS section_submit %]
+			</div>
+		</div>
+	</div>
+</form>
+
+[%# Links or content with more information about the bug being created. %]
+[% Hook.process("end") %]
+
+[% PROCESS global/footer.html.tmpl %]
+
+[%############################################################################%]
+[%# END This is where we organise the display order                          #%]
+[%############################################################################%]
+
+[%############################################################################%]
+[%# This is where we define the blocks that we need                          #%]
+[%############################################################################%]
+
+
+	[%############################################################################%]
+	[%# Block for the submit/bookmark buttons                                    #%]
+	[%############################################################################%]
+
+	[% BLOCK section_submit %]
+				<span>
+					<input type="submit" id="commit" class="btn" value="Submit [% terms.Bug %]">
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					<input type="submit" name="maketemplate" id="maketemplate" class="btn"
+					   value="Remember values as bookmarkable template"
+					   onclick="bz_no_validate_enter_bug=true" class="expert_fields">
+				</span>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for restrict visibility                                            #%]
+	[%############################################################################%]
+
+	[% BLOCK section_restrict_visibility %]
+				[% IF product.groups_available.size %]
+				<div>
+					<span>
+						<br>
+							<strong>Only users in [%+ IF Param('or_groups') %]at least one[% ELSE %]all[% END %] of the selected groups can view this [%+ terms.bug %]: </strong>
+						<br>
+							<span class="bz_info">
+								(Leave all boxes unchecked to make this a public [% terms.bug %].)
+							</span>
+						<br>
+						<br>
+						  <!-- Checkboxes -->
+						  <input type="hidden" name="defined_groups" value="1">
+						  [% FOREACH group = product.groups_available %]
+							<input type="checkbox" id="group_[% group.id FILTER html %]"
+								   name="groups" value="[% group.name FILTER html %]"
+								   [% ' checked="checked"' IF default.groups.contains(group.name)
+															  OR group.is_default %]>
+							<label for="group_[% group.id FILTER html %]">
+							  [%- group.description FILTER html_light %]</label><br>
+						  [% END %]
+					</span>
+				</div>
+				[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for See also                                                       #%]
+	[%############################################################################%]
+
+	[% BLOCK section_see_also %]
+				[% IF Param('use_see_also') %]
+					[% INCLUDE bug/field.html.tmpl
+						bug            = default
+						field          = bug_fields.see_also
+						editable       = 1
+						value          = see_also
+					%]
+				[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for dependancies (Depends on)                                      #%]
+	[%############################################################################%]
+
+	[% BLOCK section_dependson %]
+			[% IF user.in_group('editbugs', product.id) %]
+			  [% INCLUDE "bug/field-label.html.tmpl"
+				field = bug_fields.dependson editable = 1
+			  %]
+			  <span>
+				<input name="dependson" accesskey="d" value="[% dependson FILTER html %]" class="field_value">
+			  </span>
+			[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for dependancies Blocks                                            #%]
+	[%############################################################################%]
+
+	[% BLOCK section_blocks %]
+			  [% INCLUDE "bug/field-label.html.tmpl"
+				field = bug_fields.blocked editable = 1
+			  %]
+			  <span>
+				<input name="blocked" accesskey="b" value="[% blocked FILTER html %]" class="field_value">
+			  </span>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Keywords                                                       #%]
+	[%############################################################################%]
+
+	[% BLOCK section_keywords %]
+			[% IF use_keywords %]
+			  [% INCLUDE bug/field.html.tmpl
+				bug = default, field = bug_fields.keywords, editable = 1,
+				value = keywords, possible_values = all_keywords,
+				desc_url = "describekeywords.cgi", value_span = 3
+			  %]
+			[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Attachments                                                    #%]
+	[%############################################################################%]
+
+	[% BLOCK section_attachment %]
+				[% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
+				<label>Attachment:</label>
+				<span>
+					<div id="attachment_false" class="field_value bz_default_hidden">
+						<input type="button" class="btn" value="Add an attachment" onClick="handleWantsAttachment(true)">
+					</div>
+					<div id="attachment_true" class="field_value">
+						<input type="button" id="btn_no_attachment" value="Don't add an attachment"
+							class="bz_default_hidden btn"  onClick="handleWantsAttachment(false)">
+						<div>
+							<legend>Add an attachment</legend>
+							<div class="attachment_entry">
+								[% PROCESS attachment/createformcontents.html.tmpl
+									flag_types = product.flag_types.attachment
+									any_flags_requesteeble = 1
+									flag_table_id ="attachment_flags" %]
+							</div>
+						</div>
+					</div>
+				</span>
+				[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Description                                                    #%]
+	[%############################################################################%]
+
+	[% BLOCK section_description %]
+				<span class="field-label">
+					<label>Description:</label>
+				</span>
+				<span>
+					[% defaultcontent = BLOCK %]
+						[% IF cloned_bug_id %]
+						+++ This [% terms.bug %] was initially created as a clone of [% terms.Bug %] #[% cloned_bug_id %] +++
+					[% END %]
+					[%-# We are within a BLOCK. The comment will be correctly HTML-escaped
+					  # by global/textarea.html.tmpl. So we must not escape the comment here. %]
+					[% comment FILTER none %]
+				  [%- END %]
+				  [% INCLUDE bug/comment.html.tmpl
+					 minrows        = 10
+					 maxrows        = 25
+					 cols           = constants.COMMENT_COLS
+					 defaultcontent = defaultcontent
+				   %]
+					<br>
+				</span>
+			</div>
+			<div class="expert_fields bug-field-grid">
+			[% IF user.is_insider %]
+				<span>
+					&nbsp;&nbsp;
+					<input type="checkbox" id="comment_is_private" name="comment_is_private"
+					[% ' checked="checked"' IF comment_is_private %]
+						onClick="updateCommentTagControl(this, 'comment')">
+					<span for="comment_is_private">
+					Make description and any new attachment private (visible only to members 
+					of the <strong>[% Param('insidergroup') FILTER html %]</strong> group)
+					</span>
+				</span>
+				<script>
+					updateCommentTagControl(document.getElementById('comment_is_private'), 'comment');
+				</script>
+			[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Summary                                                        #%]
+	[%############################################################################%]
+
+	[% BLOCK section_summary %]
+			[% INCLUDE "bug/field-label.html.tmpl"
+			  field = bug_fields.short_desc editable = 1
+			%]
+			<span class="field_value">
+			  <input name="short_desc" size="70" value="[% short_desc FILTER html %]"
+					 maxlength="255" spellcheck="true" aria-required="true"
+					 class="required text_input" id="short_desc">
+			</span>
+		</div>
+		  [% IF feature_enabled('jsonrpc') AND !cloned_bug_id
+				AND user.settings.possible_duplicates.value == 'on' %]
+		<div id="possible_duplicates_container bug-field-grid" class="bz_default_hidden">
+		  <label>Possible<br>Duplicates:</label>
+			<span>
+				<div id="possible_duplicates">
+				</div>
+				<script type="text/javascript">
+					var dt_columns = [ 
+					  { key: "id", label: "[% field_descs.bug_id FILTER js %]",
+						formatter: YAHOO.bugzilla.dupTable.formatBugLink },
+					  { key: "summary", 
+						label: "[% field_descs.short_desc FILTER js %]",
+						formatter: "text" },
+					  { key: "status",
+						label: "[% field_descs.bug_status FILTER js %]",
+						formatter: YAHOO.bugzilla.dupTable.formatStatus },
+					  { key: "update_token", label: '',
+						formatter: YAHOO.bugzilla.dupTable.formatCcButton }
+				  ];
+				  YAHOO.bugzilla.dupTable.addCcMessage = "Add Me to the CC List";
+				  YAHOO.bugzilla.dupTable.init({
+					container: 'possible_duplicates',
+					columns: dt_columns,
+					product_name: '[% product.name FILTER js %]',
+					summary_field: 'short_desc',
+					options: {
+					  MSG_LOADING: 'Searching for possible duplicates...',
+					  MSG_EMPTY:   'No possible duplicates found.',
+					  SUMMARY:     'Possible Duplicates'
+					}
+				  });
+				</script>
+			</span>
+		  [% END %]			
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Section Spacer                                                 #%]
+	[%############################################################################%]
+
+	[% BLOCK section_spacer %]
+	  <div class="bug-field-grid">
+		
+	  </div>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for target_milestone                                               #%]
+	[%############################################################################%]
+
+	[% BLOCK section_target_milestone %]
+			  [% IF Param('usetargetmilestone') && Param('letsubmitterchoosemilestone') %]
+				[% INCLUDE select field = bug_fields.target_milestone %]
+			  [% END %]	
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for severity                                                       #%]
+	[%############################################################################%]
+
+
+	[% BLOCK section_severity %]
+				[% INCLUDE bug/field.html.tmpl
+				  bug = default, field = bug_fields.bug_severity, editable = 1, 
+				  value = default.bug_severity %]
+	[% END %]
+	
+
+	[%############################################################################%]
+	[%# Block for choose priority                                                #%]
+	[%############################################################################%]
+
+
+	[% BLOCK section_choose_priority %]
+				[% IF Param('letsubmitterchoosepriority') %]
+				  [% INCLUDE bug/field.html.tmpl
+					bug = default, field = bug_fields.priority, editable = 1, 
+					value = default.priority %]
+				[% ELSE %]
+				  <td colspan="2">&nbsp;</td>
+				[% END %]
+	[% END %]
+	
+
+	[%############################################################################%]
+	[%# Block for rep Platform                                                   #%]
+	[%############################################################################%]
+
+
+	[% BLOCK section_rep_platform %]
+				[% INCLUDE bug/field.html.tmpl
+				  bug = default, field = bug_fields.rep_platform, editable = 1,
+				  value = default.rep_platform %]
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for Default OS                                                     #%]
+	[%############################################################################%]
+
+	[% BLOCK section_op_sys %]
+				[% INCLUDE bug/field.html.tmpl 
+				  bug = default, field = bug_fields.op_sys, editable = 1, 
+				  value = default.op_sys %]
+				[% IF (!Param('defaultplatform') || !Param('defaultopsys')) && !cloned_bug_id %]
+				<div>
+					<div id="os_guess_note" class="comment">
+						<div>We've made a guess there
+							[% IF Param('defaultplatform') %]
+							. Please check it
+							[% ELSIF Param('defaultopsys') %]
+							platform. Please check it
+							[% ELSE %]
+							please check
+							[% END %]
+							and make any corrections if necessary.
+						</div>
+					</div>
+				</div>
+				[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Version                                                        #%]
+	[%############################################################################%]
+
+	[% BLOCK section_version %]
+				  [% INCLUDE "bug/field-label.html.tmpl"
+					field = bug_fields.version editable = 1 rowspan = 4
+				  %]
+				</span>
+				<select name="version" id="version" size="5" aria-required="true"
+						class="required">
+				  [%- FOREACH v = version %]
+					[% NEXT IF NOT v.is_active %]
+					<option value="[% v.name FILTER html %]"
+					  [% ' selected="selected"' IF v.name == default.version %]>[% v.name FILTER html -%]
+					</option>
+				  [%- END %]
+				</select>
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for Default CC                                                     #%]
+	[%############################################################################%]
+
+	[% BLOCK section_default_cc %]
+				<span class="field-label">
+					<label>
+						Default [% field_descs.cc FILTER html %]:
+					</label>
+				</span>
+				<div id="initial_cc">
+				</div>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for choosing CC                                                    #%]
+	[%############################################################################%]
+
+	[% BLOCK section_choose_cc %]
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.cc editable = 1 
+				%]
+				[% INCLUDE global/userselect.html.tmpl
+				   id => "cc"
+				   name => "cc"
+				   value => cc
+				   disabled => cc_disabled
+				   size => 30
+				   multiple => 5
+				   classes => ("field_value")
+				 %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for QA                                                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_qa %]
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.qa_contact editable = 1
+				%]
+				[% INCLUDE global/userselect.html.tmpl
+				   id => "qa_contact"
+				   name => "qa_contact"
+				   value => qa_contact
+				   disabled => qa_contact_disabled
+				   size => 30
+				   emptyok => 1
+				   custom_userlist => qa_contacts_list
+				   classes => ("field_value")
+				 %]
+				<noscript>(Leave blank to assign to default qa contact)</noscript>
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for Assignee                                                       #%]
+	[%############################################################################%]
+
+	[% BLOCK section_assignee %]
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.assigned_to editable = 1
+				%]
+				[% INCLUDE global/userselect.html.tmpl
+				   id => "assigned_to"
+				   name => "assigned_to"
+				   value => assigned_to
+				   disabled => assigned_to_disabled
+				   size => 30
+				   emptyok => 1
+				   custom_userlist => assignees_list
+				   classes => ("field_value")
+				 %]
+				<noscript>(Leave blank to assign to [% ipi_terms.component %]'s default assignee)</noscript>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Status                                                         #%]
+	[%############################################################################%]
+
+	[% BLOCK section_status %]
+				[% INCLUDE bug/field.html.tmpl
+				  bug = default, field = bug_fields.bug_status,
+				  editable = (bug_status.size > 1), value = default.bug_status
+				  override_legal_values = bug_status %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Flags                                                          #%]
+	[%############################################################################%]
+
+	[% BLOCK section_flags %]
+		<div class="bug-field-grid collapse-controller">
+		  <a href="javascript:void(0);" data-toggle="collapse" data-target="#flags" class="default-open" style="display:inherit;">Flags and approval request</a>
+		</div>
+		<div id="flags" class="collapse in">
+				[%# Calculate the number of rows we can use for flags %]
+				[% num_rows = 6 + (Param("useqacontact") ? 1 : 0) +
+								  (user.is_timetracker ? 3 : 0)
+				%]
+				
+				[% IF product.flag_types.bug.size > 0 %]
+				  [% display_flag_headers = 0 %]
+				  [% any_flags_requesteeble = 0 %]
+				  
+				  [% FOREACH flag_type = product.flag_types.bug %]
+					[% NEXT UNLESS flag_type.is_active %]
+					[% display_flag_headers = 1 %]
+					[% SET any_flags_requesteeble = 1 IF flag_type.is_requestable && flag_type.is_requesteeble %]
+				  [% END %]
+				  
+				  [% IF display_flag_headers %]
+					[% PROCESS "flag/list.html.tmpl" flag_types = product.flag_types.bug
+													 any_flags_requesteeble = any_flags_requesteeble
+													 flag_table_id = "bug_flags"
+					%]
+				  [% END %]
+				[% END %]
+		</div>
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Component fields                                               #%]
+	[%############################################################################%]
+	
+	[% BLOCK section_component %]
+					<span class="field_label">
+					  [% component_desc_url = BLOCK -%]
+						describecomponents.cgi?product=[% product.name FILTER uri %]
+					  [% END %]
+					  [% INCLUDE "bug/field-label.html.tmpl"
+						field = bug_fields.component editable = 1
+						desc_url = component_desc_url
+					  %]
+					</span>
+					<select name="component" id="component" onchange="set_assign_to([% Param("useqacontact") %]);"
+							size="7" aria-required="true" class="required">
+					  [%# Build the lists of assignees and QA contacts if "usemenuforusers" is enabled. %]
+					  [% IF Param("usemenuforusers") %]
+						[% assignees_list = user.get_userlist.clone %]
+						[% qa_contacts_list = user.get_userlist.clone %]
+					  [% END %]
+					  
+					  [%- FOREACH c = product.components %]
+						[% NEXT IF NOT c.is_active %]
+						<option value="[% c.name FILTER html %]"
+								id="v[% c.id FILTER html %]_component"
+						  [% IF c.name.lower == default.component_.lower %]
+							[%# This is for bug/field.html.tmpl, for visibility-related
+							  # controls. %]
+							[% default.component_id = c.id %]
+							selected="selected"
+						  [% END %]>
+						  [% c.name FILTER html -%]
+						</option>
+						[% IF Param("usemenuforusers") %]
+						  [% INCLUDE build_userlist default_user = c.default_assignee,
+													userlist = assignees_list %]
+						  [% INCLUDE build_userlist default_user = c.default_qa_contact,
+													userlist = qa_contacts_list %]
+						[% END %]
+					  [%- END %]
+					</select>
+					<script type="text/javascript">
+						<!--
+						[%+ INCLUDE "bug/field-events.js.tmpl" 
+								   field = bug_fields.component, product = product %]
+						//-->
+					</script>
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for Component description                                          #%]
+	[%############################################################################%]
+	
+	[% BLOCK section_component_description %]
+					<legend>Details about the [% ipi_terms.Component %]</legend>
+					<div id="comp_desc" class="comment">
+						Select a [% ipi_terms.component %] to read its description.
+					</div>
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for Timetracking fields                                            #%]
+	[%############################################################################%]
+
+	[% BLOCK section_timetracking %]
+		  [% IF user.is_timetracker %]
+			<div class="bug-field-grid">
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.estimated_time editable = 1
+				%]
+				<input name="estimated_time" size="6" maxlength="6" value="[% estimated_time FILTER html %]" class="field_value">
+			</div>
+			<div class="bug-field-grid">
+				[% INCLUDE bug/field.html.tmpl
+				  bug = default, field = bug_fields.deadline, value = deadline,
+				  editable = 1, value_span = 2 %] 
+			</div>
+			[% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Alias                                                          #%]
+	[%############################################################################%]
+
+	[% BLOCK section_alias %]
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.alias editable = 1
+				%]
+				<input name="alias" size="20" value="[% alias FILTER html %]" class="field_value">
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for url                                                          #%]
+	[%############################################################################%]
+
+	[% BLOCK section_url %]
+				[% INCLUDE "bug/field-label.html.tmpl"
+				  field = bug_fields.bug_file_loc editable = 1
+				%]
+				<input name="bug_file_loc" id="bug_file_loc"
+					   size="30" value="[% bug_file_loc FILTER html %]" class="field_value">
+	[% END %]
+
+
+	[%############################################################################%]
+	[%# Block for SELECT fields                                                  #%]
+	[%############################################################################%]
+
+	[% BLOCK select %]
+
+	  [% INCLUDE "bug/field-label.html.tmpl"
+		field = field editable = 1
+	  %]
+	  <td>
+		<select name="[% field.name FILTER html %]" 
+				id="[% field.name FILTER html %]">
+		[%- FOREACH x = ${field.name} %]
+		  [% NEXT IF NOT x.is_active %]
+		  <option value="[% x.name FILTER html %]"
+			[% " selected=\"selected\"" IF x.name == default.${field.name} %]>
+			[% display_value(field.name, x.name) FILTER html %]
+		  </option>
+		[% END %]
+		</select>
+	  </td>
+	[% END %]
+
+	[% BLOCK build_userlist %]
+	  [% user_found = 0 %]
+	  [% default_login = default_user.login %]
+	  [% RETURN UNLESS default_login %]
+
+	  [% FOREACH user = userlist %]
+		[% IF user.login == default_login %]
+		  [% user_found = 1 %]
+		  [% LAST %]
+		[% END %]
+	  [% END %]
+
+	  [% userlist.push({login    => default_login,
+						identity => default_user.identity,
+						visible  => 1})
+		 UNLESS user_found %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields                                                  #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields %]
+	[%# *** Custom Fields *** %]
+	  [% USE Bugzilla %]
+		[% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF NOT field.name.search('clust') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="expert_fields bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_1                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_1 %]
+	  [% USE Bugzilla %]
+	  
+	  [% clust_1Found = 0 %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_1') %]
+		  [% clust_1Found = 1 %]
+		[% END %]
+	  [% END %]
+	  [% IF clust_1Found %]
+		<div class="bug-field-grid collapse-controller">
+		  <a href="javascript:void(0);" data-toggle="collapse" data-target="#clust_1" class="default-open" style="display:inherit;">Suggested Solution</a>
+		</div>
+		<div id="clust_1" class="collapse in">
+	  [% END %]
+	  
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_1') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	  
+	  [% IF clust_1Found %]
+		</div>
+	  [% END %]
+	  
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_2                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_2 %]
+	  [% USE Bugzilla %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_2') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="bug-field-grid bz_field_lmb_not_broken"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_3                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_3 %]
+	  [% USE Bugzilla %]
+	  
+	  [% clust_3Found = 0 %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_3') %]
+		  [% clust_3Found = 1 %]
+		[% END %]
+	  [% END %]
+	  [% IF clust_3Found %]
+		<div class="bug-field-grid collapse-controller">
+		  <a href="javascript:void(0);" data-toggle="collapse" data-target="#clust_3" class="default-open" style="display:inherit;">Fields Clust 3</a>
+		</div>
+		<div id="clust_3" class="expand">
+	  [% END %]
+	  
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_3') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="expert_fields bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	  
+	  [% IF clust_3Found %]
+		</div>
+	  [% END %]
+	  
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_4                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_4 %]
+	  [% USE Bugzilla %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_4') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_5                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_5 %]
+	  [% USE Bugzilla %]
+	  
+	  [% clust_5Found = 0 %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_5') %]
+		  [% clust_5Found = 1 %]
+		[% END %]
+	  [% END %]
+	  [% IF clust_5Found %]
+		<div class="bug-field-grid collapse-controller">
+		  <a href="javascript:void(0);" data-toggle="collapse" data-target="#clust_5" class="default-open" style="display:inherit;">Fields Clust 5</a>
+		</div>
+		<div id="clust_5" class="expand">
+	  [% END %]
+	  
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_5') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="expert_fields bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	  
+	  [% IF clust_5Found %]
+		</div>
+	  [% END %]
+	  
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_6                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_6 %]
+	  [% USE Bugzilla %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_6') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="bug-field-grid"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	[% END %]
+
+	[%############################################################################%]
+	[%# Block for Custom Fields with keyword clust_8                             #%]
+	[%############################################################################%]
+
+	[% BLOCK section_customfields_with_keyword_clust_8 %]
+	  [% USE Bugzilla %]
+	  [% FOREACH field = Bugzilla.active_custom_fields %]
+		[% IF field.name.search('clust_8') %]
+		  [% NEXT UNLESS field.enter_bug %]
+		  [% SET value = ${field.name}.defined ? ${field.name} : "" %]
+		  <div [% 'class="bug-field-grid bz_field_lmb_not_broken"' IF !field.is_mandatory %]>
+			[% INCLUDE bug/field.html.tmpl 
+			  bug = default, field = field, value = value, editable = 1, 
+			  value_span = 3 %]
+		  </div>
+		[% END %]
+	  [% END %]
+	[% END %]

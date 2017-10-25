@@ -1,0 +1,72 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% PROCESS global/header.html.tmpl 
+  title = "Simple Search"
+  style_urls = ['skins/standard/buglist.css']
+  doc_section = "using/finding.html"
+%]
+
+[% WRAPPER search/tabs.html.tmpl %]
+
+<div class="row">
+  <p>
+  Find a specific [% terms.bug %] by entering words that describe it.  
+  [% terms.Bugzilla %] will search [% terms.bug %] descriptions and comments
+  for those words and return a list of matching [% terms.bugs %] sorted
+  by relevance.
+  </p>
+
+
+  <form name="queryform" method="get" action="buglist.cgi">
+  <input type="hidden" name="query_format" value="specific">
+  <input type="hidden" name="order" value="Importance">
+  <input type="hidden" id="no_redirect" name="no_redirect" value="0">
+  <script type="text/javascript">
+    if (history && history.replaceState) {
+      var no_redirect = document.getElementById("no_redirect");
+      no_redirect.value = 1;
+    }
+  </script>
+
+  <div class="bz_simple_search_form col-md-12">
+    <div class="bug-field-grid">
+      <label for="bug_status">[% field_descs.bug_status FILTER html %]:</label><select name="bug_status" id="bug_status">
+        [% statuses = [ { name = 'open', label = "Open" },
+                        { name = 'closed', label = "Closed" },
+                        { name = 'all', label = "All" } ] %]
+        [% FOREACH status = statuses %]
+            <option value="__[% status.name %]__" 
+                  [% " selected" IF default.bug_status.0 == "__${status.name}__" %]>
+            [% status.label FILTER html %]
+          </option>
+        [% END %]
+      </select>
+    </div>
+    <div class="bug-field-grid">
+      <label for="product">[% field_descs.product FILTER html %]:</label>
+      [% INCLUDE "global/product-select.html.tmpl"
+         id   => "product"
+         name => "product"
+         add  => "All"
+      %]
+    </div>
+    <div class="bug-field-grid">
+      <label for="content">Words:</label><input name="content" size="40" id="content" autofocus
+             value="[% default.content.0 FILTER html %]"
+             [%- " required" UNLESS Param('search_allow_no_criteria') %] class="field_value">
+    </div>
+    <div class="bug-field-grid">
+      <input type="submit" id="search" value="Search">
+    </div>
+  </div>
+  </form>
+</div>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

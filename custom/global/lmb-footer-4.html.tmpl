@@ -1,0 +1,78 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% DEFAULT qs_suffix = "" %]
+[% USE Bugzilla %]
+
+<div class="col-md-3">
+	<ul class="links">
+		[% IF Param('shutdownhtml') || Bugzilla.has_flags %]		  
+		  [% IF user.id %]
+			<a href="request.cgi?requester=[% user.login FILTER uri %]&amp;requestee=
+					 [% user.login FILTER uri %]&amp;do_union=1&amp;group=type&amp;action=queue"><li>My Requests</li></a>
+		  [% ELSE %]
+			<a href="request.cgi"><li>Requests</li></a>
+		  [% END %]
+		[% END %]
+	  [%-# Work around FF bug: keep this on one line %]
+
+	  [% Hook.process('action-links') %]
+	</ul>
+
+	<ul class="links">
+	  [% IF user.login %]
+      <a href="userprefs.cgi"><li>Preferences</li></a>
+      [% IF user.can_administer %]
+        <a href="admin.cgi"><li>Administration</li></a>
+      [% END %]
+
+      [% PROCESS link_to_documentation %]
+	</ul>
+
+	<ul class="links">
+		  [% IF user.authorizer.can_logout %]
+        <a href="index.cgi?logout=1"><li>Log&nbsp;out
+		  [% ELSE %]
+        <a href="relogin.cgi?action=end-sudo"><li>Logged&nbsp;in&nbsp;as
+		  [% END %]
+		  [% IF sudoer %]
+        [%+ sudoer.login FILTER html %]<br />(<b>impersonating
+        [%+ user.login FILTER html %]</b>
+        end session)
+		  [% ELSE %]
+        [%+ user.login FILTER html %]
+		  [% END %]
+      [%-# Work around FF bug: keep this on one line %]</li></a>
+	  [% ELSE %]
+	  
+		[% PROCESS link_to_documentation %]
+		
+		[% IF Param('createemailregexp')
+			  && user.authorizer.user_can_create_account %]
+		  <a href="createaccount.cgi"><li id="new_account_container[% qs_suffix FILTER html %]">New&nbsp;Account</li></a>
+		[% END %]
+
+		[%# Only display one login form when we're on a LOGIN_REQUIRED page. That
+		  # way, we're guaranteed that the user will use the form that has 
+		  # hidden_fields in it (the center form) instead of this one. Also, it's
+		  # less confusing to have one form (as opposed to  three) when you're 
+		  # required to log in.
+		  #%]
+		[% IF user.authorizer.can_login && !Bugzilla.page_requires_login %]
+		  [% PROCESS "account/auth/lmb-footer-login-small.html.tmpl" %]
+		[% END %]
+	[% END %]
+	</ul>
+
+	[% Hook.process("link-row") %]
+	[% BLOCK link_to_documentation %]
+		[% IF doc_section %]
+		  <a href="[% docs_urlbase _ doc_section FILTER html %]" target="_blank"><li>Help</li></a>
+		[% END %]
+	[% END %]
+</div>

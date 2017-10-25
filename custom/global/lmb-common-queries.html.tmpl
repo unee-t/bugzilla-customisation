@@ -1,0 +1,78 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% USE Bugzilla %]	    
+
+<div class="col-md-3">		
+	<div id="common_queries">
+		<h4>Common Queries:</h4>
+		<ul class="links">
+		  [% IF user.id %]
+			<a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+        <li>
+          [% title = BLOCK %]Open [% terms.bugs %] assigned to me[% END %]
+          [% title FILTER html %]
+          <!--<a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+      <a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+        <li>
+          [% title = BLOCK %]Open [% terms.bugs %] reported by me[% END %]
+          [% title FILTER html %]
+          <!--<a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+			[% IF Bugzilla.has_flags %]
+			  <a href="request.cgi?action=queue&amp;requestee=[% user.login FILTER uri %]&amp;group=type&amp;do_union=0">
+          <li>
+            [% title = BLOCK %]Requests addressed to me[% END %]
+            [% title FILTER html %]
+            <!--<a href="buglist.cgi?f1=requestees.login_name&amp;o1=equals&amp;v1=%25user%25&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+              class="rss">&nbsp;</a>-->
+          </li>
+        </a>
+			[% END %]
+		  [% END %]
+
+		  <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h">
+        <li>
+          [% terms.Bugs %] reported in the last 24 hours
+          [% title = BLOCK %][% terms.Bugs %] reported in the last 24 hours[% END %]
+          <!--<a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+			<a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d">
+        <li>
+          [% terms.Bugs %] reported in the last 7 days
+          [% title = BLOCK %][% terms.Bugs %] reported in the last 7 days[% END %]
+          <!--<a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+		  <a href="buglist.cgi?chfieldfrom=24h">
+        <li>
+          [% terms.Bugs %] changed in the last 24 hours
+          [% title = BLOCK %][% terms.Bugs %] changed in the last 24 hours[% END %]
+          <!--<a href="buglist.cgi?chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+			<a href="buglist.cgi?chfieldfrom=7d">
+        <li>
+          [% terms.Bugs %] changed in the last 7 days
+          [% title = BLOCK %][% terms.Bugs %] changed in the last 7 days[% END %]
+          <!--<a href="buglist.cgi?chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>-->
+        </li>
+      </a>
+		</ul>
+	</div>
+</div>

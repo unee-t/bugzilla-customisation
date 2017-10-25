@@ -1,0 +1,362 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+[% ################################################# %]
+[% #   LMB Hack - include file for ipi terms       # %]
+[% #################################################%]
+
+[% PROCESS "ipi/variables.ipi.tmpl" %]
+
+[% ################################################# %]
+[% #   END LMB Hack - include file for ipi terms   # %]
+[% #################################################%]
+
+[% PROCESS global/header.html.tmpl
+  title = "$terms.Bug Fields"
+  bodyclasses = ['narrow_page']
+%]
+
+<p>This page describes the various fields that you see 
+  on [% terms.abug %].</p>
+
+<table class="field_value_explanation">
+  <thead>
+  <tr>
+    <td id="bug_status">
+      <h2>[% field_descs.bug_status FILTER upper FILTER html %]</h2>
+    </td>
+
+    <td id="resolution">
+      <h2>[% field_descs.resolution FILTER upper FILTER html %]</h2>
+    </td>
+  </tr>
+
+  <tr>
+    <td>The [% field_descs.bug_status FILTER html %] field indicates the 
+      current state of a [% terms.bug %]. Only certain status transitions
+      are allowed.</td>
+
+    <td>The [% field_descs.resolution FILTER html %] field indicates what
+      happened to this [%+ terms.bug %].</td>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr class="header_row">
+    <td colspan="2">Open [% terms.Bugs %]</td>
+  </tr>
+  <tr>
+    <td>
+      <dl>
+        <dt class="unconfirmed">
+          [% display_value("bug_status", "UNCONFIRMED") FILTER html %]
+        </dt>
+        <dd class="unconfirmed">
+          This [% terms.bug %] has recently been added to the database. 
+          Nobody has confirmed that this [% terms.bug %] is valid. Users
+          who have the "canconfirm" permission set may confirm
+          this [% terms.bug %], changing its state to 
+          <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>. 
+          Or, it may be directly resolved and marked
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>.
+        </dd>
+
+        <dt class="confirmed">
+          [% display_value("bug_status", "CONFIRMED") FILTER html %]
+        </dt>
+        <dd class="confirmed">
+          This [% terms.bug %] is valid and has recently been filed.
+          [%+ terms.Bugs %] in this state become 
+          <b>[% display_value("bug_status", "IN_PROGRESS") FILTER html %]</b>
+          when somebody is working on them, or become resolved and marked
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>.
+        </dd>
+
+        <dt class="in_progress">
+          [% display_value("bug_status", "IN_PROGRESS") FILTER html %]
+        </dt>
+        <dd class="in_progress">
+          This [% terms.bug %] is not yet resolved, but is assigned to the
+          proper person who is working on the [% terms.bug %]. From here,
+          [%+ terms.bugs %] can be given to another person and become
+          <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b>, or
+          resolved and become 
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>.
+        </dd>
+        
+        [% Hook.process('open-status') %]
+      </dl>
+    </td>
+
+    <td>
+      No resolution yet. All [% terms.bugs %] which are in one of
+      these "open" states have no resolution set.
+    </td>
+  </tr>
+
+  <tr class="header_row">
+    <td colspan="2">Closed [% terms.Bugs %]</td>
+  </tr>
+
+  <tr>
+    <td>
+      <dl>
+        <dt class="resolved">
+          [% display_value("bug_status", "RESOLVED") FILTER html %]
+        </dt>
+        <dd class="resolved">
+          A resolution has been performed, and it is awaiting verification by
+          QA. From here [% terms.bugs %] are either reopened and given some
+          open status, or are verified by QA and marked
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>.
+        </dd>
+
+        <dt class="verified">
+          [% display_value("bug_status", "VERIFIED") FILTER html %]
+        </dt>
+        <dd class="verified">
+          QA has looked at the [% terms.bug %] and the resolution and
+          agrees that the appropriate resolution has been taken. This is
+          the final status for [% terms.bugs %].
+        </dd>
+        
+        [% Hook.process('closed-status') %]
+      </dl>
+    </td>
+
+    <td>
+      <dl>
+        <dt class="fixed">
+          [% display_value("resolution", "FIXED") FILTER html %]
+        </dt>
+        <dd class="fixed">
+          A fix for this [% terms.bug %] is checked into the tree and 
+          tested.
+        </dd>
+
+        <dt class="invalid">
+          [% display_value("resolution", "INVALID") FILTER html %]
+        </dt>
+        <dd class="invalid">
+          The problem described is not [% terms.abug %].
+        </dd>
+
+        <dt class="wontfix">
+          [% display_value("resolution", "WONTFIX") FILTER html %]
+        </dt>
+        <dd class="wontfix">
+          The problem described is [% terms.abug %] which will never be 
+          fixed.
+        </dd>
+
+        <dt class="duplicate">
+         [% display_value("resolution", "DUPLICATE") FILTER html %]
+        </dt>
+        <dd class="duplicate">
+          The problem is a duplicate of an existing [% terms.bug %].
+          When [% terms.abug %] is marked as a
+          <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>,
+          you will see which [% terms.bug %] it is a duplicate of,
+          next to the resolution.
+        </dd>
+
+        <dt class="worksforme">
+          [% display_value("resolution", "WORKSFORME") FILTER html %]
+        </dt>
+        <dd class="worksforme">
+          All attempts at reproducing this [% terms.bug %] were futile, 
+          and reading the code produces no clues as to why the described
+          behavior would occur. If more information appears later,
+          the [% terms.bug %] can be reopened.
+        </dd>
+        
+        [% Hook.process('resolution') %]
+      </dl>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<h2><a name="importance">Importance</h2>
+The importance of [% terms.abug %] is described as the combination of
+its <a href="#priority">priority</a> and <a href="#bug_severity">severity</a>,
+as described below.
+
+<h2><a name="priority">Priority</a></h2>
+This field describes the importance and order in which [% terms.abug %]
+should be fixed. This field is utilized by the
+assignee to prioritize their work to be done. The
+available priorities range from <b>P1</b> (most important) to
+<b>P3</b> (least important and default).
+
+<h2><a name="bug_severity">Severity</a></h2>
+This field describes the impact of [% terms.abug %]. 
+<p><strong>CHECK THE LMB INTRANET FOR MORE DETAILED INFORMATION</strong></p>
+
+<table border="1">
+  <tr>
+    <td align="right" valign="middle"><strong>DEAL BREAKER!</strong></td>
+    <td>
+      VERY IMPORTANT and VERY URGENT.
+      <br>The customer will not fullfill his/her obligations if the claim is not solved.</br>
+    </td>
+    <td> 
+      <ul>
+        <li>When the customer will cancel or terminate the lease prematurely because of the claim</li>
+        <li>When the customer refuses to pay the rent because of the claim</li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="right" valign="middle"><strong>Critical:</strong></td>
+    <td>IMPORTANT and URGENT
+      <br>The problem has an significant impact on the customer satisfaction</br>
+      <br><strong>AND</strong></br>
+      <br>The problem is serious and will worsen if nothing is done rapidly. 
+          We do not have much time to sort things out</br>
+    </td>
+    <td> 
+      <ul>
+        <li>Any issue involving leakage as this will cause bigger problem if not solved </li>
+        <li>Some important equipment is missing or damaged (bed, internet access, etc...)</li>
+        <li>Water heater is not working.</li>
+        <li>Aircon is not working.</li>
+        <li>etc...</li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="right" valign="middle"><strong>Major:</strong></td>
+    <td>IMPORTANT and normal
+      <br>The problem has an significant impact on the customer satisfaction</br>
+      <br><strong>BUT</strong></br>
+      <br>We still have some time to sort things out.</br>
+    </td>
+    <td> 
+      <ul>
+        <li>Some minor equipment or spare bedsheet is missing or damaged </li>
+        <li>A tap is leaking in the sink</li>
+        <li>A key has been lost but we still had a spare</li>
+        <li>Complaints regarding the housekeeping standards</li>
+        <li>Slow internet connection</li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="right" valign="middle"><strong>Normal:</strong></td>
+     <td>normal and URGENT
+      <br>Regular occurrences in the unit</br>
+    </td>
+    <td> 
+      <ul>
+        <li>A bulb is broken</li>
+        <li>Gas cylinder need to be replaced</li>
+        <li>Batteries in remote control need to be replaced</li>
+      </ul>
+    </td>
+  </tr>
+
+
+  <tr>
+    <td align="right" valign="middle"><strong>Minor:</strong></td>
+    <td>not important (normal) and not urgent (normal)
+      <br>Misc. requests from tenants</br>
+    </td>
+    <td> 
+      <ul>
+        <li>Request for extra equipment</li>
+        <li>Request for extra TV channels</li>
+        <li>Welcome baket and other Value Added services</li>
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<h2><a name="rep_platform">[% ipi_terms.Platform %]</a></h2>
+This is the Type of the [% terms.bug %]. This includes: 
+
+<ul>
+  <li>Aircon Maintenance</li>
+
+  <li>Aircon Repair</li>
+
+  <li>Electric Repair</li>
+
+  <li>Plummer Repair</li>
+
+  <li>etc...</li>
+
+</ul>
+
+<h2><a name="op_sys">[% ipi_terms.OperatingSystem %]</a></h2>
+This is the [% ipi_terms.OS %]. Legal values include: 
+
+<ul>
+  <li>Customer/Occupant</li>
+
+  <li>Sales Team</li>
+
+  <li>Cleaners</li>
+
+  <li>etc..</li>
+</ul>
+
+<h2><a name="assigned_to">Assigned To</a></h2>
+
+[% SET field_help_map = {} %]
+[% FOREACH field = bug_fields.keys %]
+  [% SET field_desc = field_descs.$field %]
+  [% field_help_map.$field_desc = { help  => help_html.$field, 
+                                    field => field } %]
+[% END %]
+
+[%# This field is not a real one, but its label is visible in bugs. %]
+
+[% field_help_map.Importance = { help  => help_html.importance,
+                                 field => "importance" } %]
+
+[%# These are fields that don't need to be documented, either because
+  # they have docs somewhere else in the UI, or they don't show up on bugs. 
+  # %]
+[% SET skip_fields = [ 
+  'days_elapsed', 
+  'everconfirmed',
+  'reporter_accessible',
+  'cclist_accessible',
+  'bug_group',
+  'commenter',
+  'owner_idle_time',
+  'bug_status',
+  'resolution',
+] %]
+
+<dl class="field_descriptions">
+[% FOREACH field_desc = field_help_map.keys.sort %]
+  [% SET field = field_help_map.${field_desc}.field %]
+  [% SET field_object = bug_fields.$field %]
+
+  [% NEXT IF field_object.obsolete %]
+  [% NEXT IF !user.is_timetracker AND field_object.is_timetracking %]
+
+  [% NEXT IF field == 'status_whiteboard' AND !Param('usestatuswhiteboard') %]
+  [% NEXT IF field == 'target_milestone' AND !Param('usetargetmilestone') %]
+
+  [%# For now we don't have help for attachment fields and so on. %]
+  [% NEXT IF field.match('\.') %]
+
+  [% NEXT IF skip_fields.contains(field) %]
+
+  <dt id="[% field FILTER html %]">[% field_desc FILTER html %]</dt>
+    <dd>
+      [% field_help_map.${field_desc}.help FILTER html_light %]
+    </dd>
+[% END %]
+</dl>
+
+[% PROCESS global/footer.html.tmpl %]

@@ -1,0 +1,101 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  # file derived from BZ common-links.html.tmpl
+  #%]
+
+[% DEFAULT qs_suffix = "" %]
+[% USE Bugzilla %]
+
+<ul class="links">
+  <a href="./"><li>Main</li></a>
+  <span class="separator">| </span>
+  <a href="enter_bug.cgi"><li>New</li></a>
+  <span class="separator">| </span>
+  <a href="query.cgi"><li>Search</li></a>
+  <span class="separator">| </span>
+  <a href="report.cgi"><li>Reports</li></a>
+
+  <span class="separator">| </span>
+  <li class="form">
+    <form action="buglist.cgi" method="get"
+        onsubmit="if (this.quicksearch.value == '')
+                  { alert('Please enter one or more search terms first.');
+                    return false; } return true;">
+    <input type="hidden" id="no_redirect[% qs_suffix FILTER html %]" name="no_redirect" value="0">
+    <script type="text/javascript">
+      if (history && history.replaceState) {
+        var no_redirect = document.getElementById("no_redirect[% qs_suffix FILTER js %]");
+        no_redirect.value = 1;
+      }
+    </script>
+    <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch" 
+           title="Quick Search" value="[% quicksearch FILTER html %]">
+    <input class="btn" type="submit" value="Search" 
+           id="find[% qs_suffix FILTER html %]">
+    [%-# Work around FF bug: keep this on one line %]</form>
+  <a href="page.cgi?id=quicksearch.html" title="Quicksearch Help">[?]</a></li>
+
+  [% IF Param('shutdownhtml') || Bugzilla.has_flags %]
+    [% IF user.id %]
+      <span class="separator">| </span>
+      <a href="request.cgi?requester=[% user.login FILTER uri %]&amp;requestee=
+               [% user.login FILTER uri %]&amp;do_union=1&amp;group=type&amp;action=queue"><li>My Requests</li></a>
+    [% ELSE %]
+      <a href="request.cgi"><li>Requests</li></a>
+    [% END %]
+  [% END %]
+  [%-# Work around FF bug: keep this on one line %]
+
+  [% Hook.process('action-links') %]
+
+  [% IF user.login %]
+
+    [% PROCESS link_to_documentation %]
+
+    [% IF user.authorizer.can_logout %]
+      <span class="separator">| </span>
+      <a href="index.cgi?logout=1"><li>Log&nbsp;out</li></a>
+    [% ELSE %]
+      Logged&nbsp;in&nbsp;as
+    [% END %]
+    [% IF sudoer %]
+      [%+ sudoer.login FILTER html %] (<b>impersonating
+      [%+ user.login FILTER html %]</b>
+      <a href="relogin.cgi?action=end-sudo"><li>end session</li></a>)
+    [% ELSE %]
+      [%+ user.login FILTER html %]
+    [% END %]
+  [%-# Work around FF bug: keep this on one line %]
+  [% ELSE %]
+  
+    [% PROCESS link_to_documentation %]
+    
+    [% IF Param('createemailregexp')
+          && user.authorizer.user_can_create_account %]
+      <span class="separator">| </span>
+      <a href="createaccount.cgi"><li id="new_account_container[% qs_suffix FILTER html %]">New&nbsp;Account</li></a>
+    [% END %]
+
+    [%# Only display one login form when we're on a LOGIN_REQUIRED page. That
+      # way, we're guaranteed that the user will use the form that has 
+      # hidden_fields in it (the center form) instead of this one. Also, it's
+      # less confusing to have one form (as opposed to  three) when you're 
+      # required to log in.
+      #%]
+    [% IF user.authorizer.can_login && !Bugzilla.page_requires_login %]
+      [% PROCESS "account/auth/login-small.html.tmpl" %]
+    [% END %]
+  [% END %]
+</ul>
+
+[% Hook.process("link-row") %]
+[% BLOCK link_to_documentation %]
+    [% IF doc_section %]
+      <span class="separator">| </span>
+      <a href="[% docs_urlbase _ doc_section FILTER html %]" target="_blank"><li>Help</li></a>
+    [% END %]
+[% END %]

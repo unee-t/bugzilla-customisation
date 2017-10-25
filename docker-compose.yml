@@ -1,0 +1,72 @@
+version: '2'
+services:
+    bugzilla:
+      image: uneet/custom-bugzilla
+      restart: on-failure
+      ports:
+        - 8081:80
+      environment: # Setup by local .env file
+            SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
+            SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
+            SES_VERIFIED_SENDER: ${SES_VERIFIED_SENDER}
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_PORT: ${MYSQL_PORT}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      depends_on:
+        - db
+      volumes:
+            - ./custom:/opt/bugzilla/template/en/custom
+            - ./skin:/opt/bugzilla/skins/contrib/skin
+      networks:
+        - network
+
+    db:
+      image: mariadb
+      ports:
+        - 3306:3306
+      environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      volumes:
+            - ./mariadb:/var/lib/mysql
+            - ./sql:/docker-entrypoint-initdb.d
+      networks:
+            - network
+
+    adminer:
+     image: adminer
+     ports:
+        - 8082:8082
+     depends_on:
+        - db
+     networks:
+        - network
+
+    meteor:
+      image: ulexus/meteor
+      ports:
+       - "8080:80"
+      networks:
+                - network
+      environment:
+       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/2017-08-31/unee-t-fe.tar.gz
+       - ROOT_URL=http://local.unee-t.com
+       - BUGZILLA_URL=http://bugzilla
+       - BUGZILLA_ADMIN_KEY=I6zRu7bPak687rcIBCkNbFKblfRXPn2X3xgEFz99
+       - MONGO_URL=mongodb://mongo:27017/mydatabase
+
+    mongo:
+      image: mongo
+      ports:
+      - "27017:27017"
+      networks:
+                - network
+
+networks:
+    network:
+        driver: bridge

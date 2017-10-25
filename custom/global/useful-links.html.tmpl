@@ -1,0 +1,33 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[% ################################################## %]
+[% #   LMB Hack - replace links in the footer       # %]
+[% ##################################################%]
+
+<ul id="useful-links">
+  <li id="links-actions">
+      [% PROCESS "global/lmb-footer-links-1.html.tmpl" qs_suffix = "_bottom" %]
+  </li>
+
+[% ################################################## %]
+[% #   END Hack - replace links in the footer       # %]
+[% ##################################################%]
+
+[% ################################################################################## %]
+[% #   LMB Hack - Move Saved searches into the lmb-common-queries.html.tmpl file  # %]
+[% ################################################################################## %]
+
+
+[% ################################################################################## %]
+[% #   END Hack - Move Saved searches into the lmb-common-queries.html.tmpl file  # %]
+[% ################################################################################## %]  
+
+  [%# Sections of links to more things users can do on this installation. %]
+  [% Hook.process("end") %]
+</ul>

@@ -1,0 +1,36 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# Use the current script name. If an empty name is returned,
+  # then we are accessing the home page. %]
+
+[% USE Bugzilla %]
+[% cgi = Bugzilla.cgi %]
+
+[% login_target = cgi.url("-relative" => 1, "-query" => 1) %]
+[% IF !login_target OR login_target.match("^token.cgi") %]
+ [% login_target = "index.cgi" %]
+[% END %]
+
+<a id="login_link[% qs_suffix %]" href="[% script_url FILTER html %]"
+     onclick="return show_mini_login_form('[% qs_suffix %]')">
+  <li id="mini_login_container[% qs_suffix %]">
+    [% connector = "?" %]
+    [% IF cgi.request_method == "GET" AND cgi.query_string %]
+      [% connector = "&" %]
+    [% END %]
+    [% script_url = login_target _ connector _ "GoAheadAndLogIn=1" %]
+    Log In
+
+    [% Hook.process('additional_methods') %]
+  </li>
+</a>
+<a id="forgot_link[% qs_suffix %]" href="[% script_url FILTER html %]#forgot"
+     onclick="return show_forgot_form('[% qs_suffix %]')">
+  <li id="forgot_container[% qs_suffix %]">Forgot Password</li>
+</a>

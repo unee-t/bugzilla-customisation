@@ -1,0 +1,36 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # This template has no interface. However, you must fulfill the interface to
+  # global/useful-links.html.tmpl.
+  #%]
+
+      [% Hook.process('main-end') %]
+    </div>
+
+    <div id="footer" class="row">
+
+[% ################################################################################################ %]
+[% #   LMB Hack - move the whole div common_queries in the footer from the index.html.tmpl file   # %]
+[% ################################################################################################ %]
+	  
+    [% PROCESS "global/lmb-common-queries.html.tmpl" %]
+	  [% PROCESS "global/lmb-footer-2.html.tmpl" %]
+	  [% PROCESS "global/lmb-footer-3.html.tmpl" %]
+	  [% PROCESS "global/lmb-footer-4.html.tmpl" %]
+
+[% ################################################################################################ %]
+[% #   END Hack - move the whole div common_queries in the footer from the index.html.tmpl file   # %]
+[% ################################################################################################ %]
+
+    </div>
+
+    [% Hook.process("end") %]
+  </body>
+</html>

@@ -1,0 +1,13 @@
+sudo: required
+language: generic
+services:
+- docker
+
+install:
+ - docker build -t uneet/bugzilla-customisation .
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push uneet/bugzilla-customisation;
+    fi
