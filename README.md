@@ -77,7 +77,11 @@ yourself as we can't have AWS secrets in a public repo!
 
 `SES*` is required for email notifications. [SES dashboard](https://us-west-2.console.aws.amazon.com/ses/home?region=us-west-2#dashboard:)
 
-Deployment secrets are managed upon [pipeline settings](https://gitlab.com/unee-t/bugzilla/settings/ci_cd).
+How to test if email is working:
+
+	echo -e "Subject: Test Mail\r\n\r\nThis is a test mail" | msmtp --debug -t user@example.com
+
+Video about testing email: https://s.natalian.org/2017-10-27/uneetmail.mp4
 
 # State snapshots
 
