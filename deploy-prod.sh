@@ -1,6 +1,6 @@
 #!/bin/bash
 #curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
-/usr/local/bin/ecs-cli configure -c master -p lmb-prod
+/usr/local/bin/ecs-cli configure -c master -p lmb-prod -r ap-southeast-1
 test -f aws-env.prod && source aws-env.prod
 
 envsubst < AWS-docker-compose.yml > docker-compose-bugzilla.yml
