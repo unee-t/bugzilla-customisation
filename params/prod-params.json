@@ -49,7 +49,7 @@
    "letsubmitterchoosemilestone" : "0",
    "letsubmitterchoosepriority" : "1",
    "mail_delivery_method" : "Sendmail",
-   "mailfrom" : "bugzilla-daemon",
+   "mailfrom" : "case@unee-t.com",
    "maintainer" : "support.dashboard@unee-t.com",
    "makeproductgroups" : "0",
    "max_search_results" : "10000",
