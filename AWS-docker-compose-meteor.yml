@@ -9,24 +9,9 @@ services:
        - ROOT_URL=${ROOT_URL}
        - BUGZILLA_URL=${BUGZILLA_URL}
        - BUGZILLA_ADMIN_KEY=${BUGZILLA_ADMIN_KEY}
-       - MONGO_URL=mongodb://mongo:27017/mydatabase
+       - MONGO_URL=mongodb://root:${MONGO_PASSWORD}@${MONGO_CONNECT}
       logging:
             driver: awslogs
             options:
               awslogs-region: ap-southeast-1
               awslogs-group: meteor
-      links:
-          - "mongo"
-
-    mongo:
-      image: mongo
-      volumes:
-        - '/data/db:/data/db'
-      ports:
-      - "27017:27017"
-      logging:
-              driver: awslogs
-              options:
-                awslogs-region: ap-southeast-1
-                awslogs-group: mongo
-

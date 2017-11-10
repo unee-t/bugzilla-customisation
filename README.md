@@ -52,7 +52,7 @@ http://localhost:8082/ see [environment](.env) for credentials
 
 # JSON API
 
-<http://bugzilla.readthedocs.io/en/latest/api/>
+<https://bugzilla.readthedocs.io/en/latest/api/>
 
 	curl http://localhost:8081/rest/bug/1 | jq
 
@@ -68,12 +68,17 @@ You shouldn't need to do this since normally we should use out gitlab hosted Bug
 
 # Environment
 
-Some values defined in [the environment file](.env)  need to be managed by
-yourself as we can't have AWS secrets in a public repo!
+Secrets are managed in [AWS's parameter
+store](https://ap-southeast-1.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#Parameters:sort=Name).
 
-* SES_SMTP_USERNAME
+Assuming the profiles `lmb-dev` is setup for development AWS account
+8126-4485-3088 and `lmb-prod` for 192458993663, the `aws-env` and
+`aws-env.prod` will be sourced and [aws-cli will fetch the secrets](https://github.com/aws/aws-cli/issues/2950).
+
+* MONGO_PASSWORD
+* MYSQL_PASSWORD
 * SES_SMTP_PASSWORD
-* SES_VERIFIED_SENDER
+* BUGZILLA_ADMIN_KEY
 
 `SES*` is required for email notifications. [SES dashboard](https://us-west-2.console.aws.amazon.com/ses/home?region=us-west-2#dashboard:)
 

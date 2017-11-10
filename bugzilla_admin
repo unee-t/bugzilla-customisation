@@ -1,0 +1,5 @@
+$answer{'ADMIN_EMAIL'}     = 'contributor@example.com'; # not used if the database is primed from sql/ !!
+$answer{'ADMIN_PASSWORD'}  = 'password';                # not used if the database is primed from sql/ !!
+$answer{'ADMIN_REALNAME'}  = 'Administrator';
+$answer{'NO_PAUSE'}        = 1;
+$answer{'create_htaccess'} = '0';

@@ -1,0 +1,26 @@
+#!/bin/sh -e
+# Set up bugzilla and run apache2
+
+envsubst < /etc/msmtprc.temp > /etc/msmtprc
+
+cd /opt/bugzilla
+
+# Substitute values into bugzilla localconfig
+sed --in-place -f - localconfig <<SED
+s/db_host *= *'[a-zA-Z0-9.]\+'/db_host = '${MYSQL_HOST}'/
+s/db_port *= *[0-9.]\+/db_port = ${MYSQL_PORT}/
+s/db_name *= *'[a-zA-Z0-9.]\+'/db_name = '${MYSQL_DATABASE}'/
+s/db_user *= *'[a-zA-Z0-9.]\+'/db_user = '${MYSQL_USER}'/
+s/db_pass\s*=\s*'[^']*'/db_pass = '${MYSQL_PASSWORD}'/
+s/webservergroup *= *'[a-zA-Z0-9]\+'/webservergroup = 'www-data'/
+SED
+
+# Verify bugzilla setup
+./checksetup.pl bugzilla_admin
+
+curl -o /opt/bugzilla/data/params.json ${PARAMS_URL}
+
+# Start apache2
+. /etc/apache2/envvars
+
+/usr/sbin/apache2 -D FOREGROUND
