@@ -21,6 +21,7 @@ services:
       volumes:
             - ./custom:/opt/bugzilla/template/en/custom
             - ./skin:/opt/bugzilla/skins/contrib/skin
+            - ./extensions/UneeTBridge:/opt/bugzilla/extensions/UneeTBridge
       networks:
         - network
 

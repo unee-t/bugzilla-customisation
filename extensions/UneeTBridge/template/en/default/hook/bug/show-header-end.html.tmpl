@@ -1,0 +1,18 @@
+<div id="form-test">
+  <h3>Invite new participants to Cases system:</h3>
+  <form action="[% Param('cases_server_url') %]/api/invitation" method="POST" target="_blanc">
+    <label for="email">Recipient email:</label>
+    <input id="email" type="text" name="email" />
+    <input type="hidden" name="claimId" value="[% bug.bug_id FILTER js %]" />
+    <input type="hidden" name="unitId" value="[% bug.product_id FILTER js %]" />
+    <label for="role">Role:</label>
+    <select id="role" name="role">
+      <option value="1">Tenant</option>
+      <option value="2">Owner/landlord</option>
+      <option value="3">Contractor</option>
+      <option value="4">Management Company</option>
+      <option value="5">Agent</option>
+    </select>
+    <input type="submit" value="Send" />
+  </form>
+</div>
