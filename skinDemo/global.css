@@ -6896,7 +6896,7 @@ button.close {
 /* titles (begin) */
     #titles {
         width: 100%;
-        background-color: #0068B3;
+        background-color: #634710;
         color: #fff;
         border-top-left-radius: 0px;
         border-top-right-radius: 0px;
@@ -7899,7 +7899,7 @@ button.navbar-toggle {
 /* End: overriding Bugzilla default values */
 
 a, a:hover, a:visited {
-  color: #0068B3;
+  color: #634710;
   text-decoration: none;
 }
   
@@ -7942,7 +7942,7 @@ textarea {
 }
 
 #footer {
-  background: #0068B3;
+  background: #634710;
   border: none;
   color: #fff;
   padding-top: 2px;
@@ -7964,7 +7964,7 @@ textarea {
 
 #footer ul.links li:hover {
   background: #fff;
-  color: #0068B3;
+  color: #634710;
 }
 
 .field-grid {
@@ -8032,7 +8032,7 @@ textarea {
 }
 
 .collapse-controller {
-  background-color: #0068B3;
+  background-color: #634710;
   margin-bottom: 0.5em;
   padding: 0.5em;
 }
@@ -8069,7 +8069,7 @@ textarea {
   }
   
   #header #common_links ul.links li:hover:not(.form) {
-    background: #0068B3;
+    background: #634710;
     color: #fff;
     text-decoration: none;
   }
@@ -8117,7 +8117,7 @@ textarea {
   }
 
   .responsive-th {
-    background-color: #0068B3;
+    background-color: #634710;
     display: inline-block;
     margin: 5px;
   }
