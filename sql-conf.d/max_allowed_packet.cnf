@@ -1,5 +1,0 @@
-[mysql]
-max_allowed_packet      = 128M
-
-[mysqld]
-max_allowed_packet      = 128M
