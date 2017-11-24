@@ -1,5 +1,5 @@
 Requires [docker](https://www.docker.com/) &
-[docker-compose](https://docs.docker.com/compose/). Linux is definitely a plus!
+[docker-compose](https://docs.docker.com/compose/). Linux is definitely a plus, else run on a VPS.
 
 # Development servers
 
@@ -21,7 +21,7 @@ Requires [docker](https://www.docker.com/) &
 You might need to do a `make ${up,down,up}` to make it all work due to the
 setup phases of {bugzilla,db} being a bit difficult to co-ordinate with docker compose.
 
-# Login info
+# Login info set by sql/demo.sql.gz
 
 If you are using the default primed sql/demo state username;password are:
 
@@ -39,6 +39,26 @@ If you are using the default primed sql/demo state username;password are:
 	sabrina@example.com;sabrina
 
 Else if not sql/demo see [bugzilla_admin](bugzilla_admin)
+
+# Bugzilla configuration notes
+
+Bugzilla is setup by a variety of sources:
+
+* the initial [vanilla stable bugzilla base image](https://github.com/unee-t/bugzilla)
+* \*params.json - seemingly just for URL and mailfrom address set via public URLs
+* the sql - primed in development enviroments by sql/demo.sql.gz
+* localconfig - created with the start script to set database connection parameters
+* bugzilla_admin - for initial administrator user/pass
+* custom skin and templates - set via the Dockerfile
+
+Largely co-ordinated by environment varibles in:
+
+* .env for local
+* aws-env.dev for development / testing /staging
+* aws-env.prod for production
+
+Note that the **BUGZILLA_ADMIN_KEY** aka the API key which AFAIK can only be
+setup on a running Bugzilla install via the Web interface. RE https://github.com/unee-t/bugzilla-customisation/issues/9
 
 # Debug
 
@@ -62,7 +82,7 @@ Or upon the dev server:
 
 # Build
 
-You shouldn't need to do this since normally we should use out gitlab hosted Bugzilla image.
+You shouldn't need to do this since normally we should use our [Docker hosted Bugzilla image](https://hub.docker.com/r/uneet/).
 
 	make build
 
