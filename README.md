@@ -92,7 +92,7 @@ Secrets are managed in [AWS's parameter
 store](https://ap-southeast-1.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#Parameters:sort=Name).
 
 Assuming the profiles `lmb-dev` is setup for development AWS account
-8126-4485-3088 and `lmb-prod` for 192458993663, the `aws-env` and
+8126-4485-3088 and `lmb-prod` for 192458993663, the `aws-env.dev` and
 `aws-env.prod` will be sourced and [aws-cli will fetch the secrets](https://github.com/aws/aws-cli/issues/2950).
 
 * MONGO_PASSWORD

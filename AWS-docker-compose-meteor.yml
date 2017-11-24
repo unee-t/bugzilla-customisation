@@ -5,7 +5,7 @@ services:
       ports:
        - "8080:80"
       environment:
-       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/master.tar.gz
+       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/staging.tar.gz
        - ROOT_URL=${ROOT_URL}
        - BUGZILLA_URL=${BUGZILLA_URL}
        - BUGZILLA_ADMIN_KEY=${BUGZILLA_ADMIN_KEY}
