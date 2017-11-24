@@ -57,7 +57,7 @@ services:
       networks:
                 - network
       environment:
-       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/2017-08-31/unee-t-fe.tar.gz
+       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/33ad83d.tar.gz
        - ROOT_URL=http://local.unee-t.com
        - BUGZILLA_URL=http://bugzilla
        - BUGZILLA_ADMIN_KEY=I6zRu7bPak687rcIBCkNbFKblfRXPn2X3xgEFz99
