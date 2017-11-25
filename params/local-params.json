@@ -86,7 +86,7 @@
    "strict_transport_security" : "off",
    "timetrackinggroup" : "syst_see_timetracking",
    "upgrade_notification" : "latest_stable_release",
-   "urlbase" : "http://localhost/",
+   "urlbase" : "",
    "use_mailer_queue" : "0",
    "use_see_also" : "1",
    "useclassification" : "1",
