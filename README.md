@@ -102,7 +102,7 @@ Assuming the profiles `lmb-dev` is setup for development AWS account
 
 The root user for RDS (the database) should be reserved for administrative tasks:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u root --password=$(aws --profile lmb-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile lmb-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 Bugzilla connects to the database using the 'bugzilla' user:
 
@@ -124,15 +124,19 @@ Video about testing email: https://s.natalian.org/2017-10-27/uneetmail.mp4
 
 Save:
 
-	mysqldump -h 127.0.0.1 -P 3306 -u root --password=uniti bugzilla > demo.sql
+	mysqldump -h 127.0.0.1 -P 3306 -u mysql --password=jai7Paib bugzilla > demo.sql
 
 Restore:
 
-	mysql -h 127.0.0.1 -P 3306 -u root --password=uniti bugzilla < fresh.sql
+	mysql -h 127.0.0.1 -P 3306 -u mysql --password=jai7Paib bugzilla < dev.sql
 
 To restore on dev server:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u root --password=SECRET bugzilla < demo.sql
+	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=SECRET bugzilla < demo.sql
+
+# Debug mysql queries locally
+
+	innotop -h 127.0.0.1 -P 3306 -u root --password=uniti
 
 # How to check for mail when in test mode
 
