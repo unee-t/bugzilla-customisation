@@ -44,7 +44,7 @@ services:
     adminer:
      image: adminer
      ports:
-        - 8082:8082
+        - 8082:8080
      depends_on:
         - db
      networks:
