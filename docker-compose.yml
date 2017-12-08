@@ -53,11 +53,11 @@ services:
     meteor:
       image: ulexus/meteor
       ports:
-       - "8080:80"
+       - "8080:3000"
       networks:
                 - network
       environment:
-       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/33ad83d.tar.gz
+       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/master.tar.gz
        - ROOT_URL=http://local.unee-t.com
        - BUGZILLA_URL=http://bugzilla
        - BUGZILLA_ADMIN_KEY=I6zRu7bPak687rcIBCkNbFKblfRXPn2X3xgEFz99
