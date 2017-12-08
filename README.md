@@ -78,7 +78,7 @@ http://localhost:8082/ see [environment](.env) for credentials
 
 Or upon the dev server:
 
-	curl -s https://dev.unee-t.com/rest/bug/1?api_key=I6zRu7bPak687rcIBCkNbFKblfRXPn2X3xgEFz99 | jq
+	curl -i https://dev.dashboard.unee-t.com/rest/bug/1?api_key=$(aws --profile lmb-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
 
 # Build
 
