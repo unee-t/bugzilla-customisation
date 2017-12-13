@@ -21,6 +21,10 @@ services:
       volumes:
             - ./custom:/opt/bugzilla/template/en/custom
             - ./skin:/opt/bugzilla/skins/contrib/skin
+            - ./skinDev:/opt/bugzilla/skins/contrib/skinDev
+            - ./skinDemo:/opt/bugzilla/skins/contrib/skinDemo
+            - ./skinTest:/opt/bugzilla/skins/contrib/skinTest
+            - ./skinLocal:/opt/bugzilla/skins/contrib/skinLocal
             - ./extensions/UneeTBridge:/opt/bugzilla/extensions/UneeTBridge
       networks:
         - network
