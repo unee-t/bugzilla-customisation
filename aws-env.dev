@@ -8,7 +8,6 @@ export MYSQL_PASSWORD=$(aws --profile lmb-dev ssm get-parameters --names MYSQL_P
 export MYSQL_PORT=3306
 export MYSQL_USER=bugzilla
 export PARAMS_URL=https://raw.githubusercontent.com/unee-t/bugzilla-customisation/master/params/dev-params.json
-export ROOT_URL=https://dev.case.unee-t.com
 export SES_SMTP_PASSWORD=$(aws --profile lmb-dev ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 export SES_SMTP_USERNAME=AKIAJQS3XVKKTQEQQJAA
 export SES_VERIFIED_SENDER=dev.case@unee-t.com
