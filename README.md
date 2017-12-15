@@ -45,7 +45,7 @@ Else if not sql/demo see [bugzilla_admin](bugzilla_admin)
 Bugzilla is setup by a variety of sources:
 
 * the initial [vanilla stable bugzilla base image](https://github.com/unee-t/bugzilla)
-* \*params.json - seemingly just for URL and mailfrom address set via public URLs
+* \*-params.json - seemingly just for URL and mailfrom address set via public URLs
 * the sql - primed in development enviroments by sql/demo.sql.gz
 * localconfig - created with the start script to set database connection parameters
 * bugzilla_admin - for initial administrator user/pass
