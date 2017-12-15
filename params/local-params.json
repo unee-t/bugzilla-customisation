@@ -48,7 +48,7 @@
    "last_visit_keep_days" : "10",
    "letsubmitterchoosemilestone" : "0",
    "letsubmitterchoosepriority" : "1",
-   "mail_delivery_method" : "Sendmail",
+   "mail_delivery_method" : "Test",
    "mailfrom" : "bugzilla-daemon",
    "maintainer" : "",
    "makeproductgroups" : "0",
