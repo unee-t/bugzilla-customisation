@@ -32,7 +32,7 @@ shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 if ! test -x /usr/local/bin/ecs-cli
 then
-	curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-v0.6.6 && chmod +x /usr/local/bin/ecs-cli
+	curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
 fi
 
 ecs-cli configure --cluster master --region ap-southeast-1 --compose-service-name-prefix ecscompose-service-
