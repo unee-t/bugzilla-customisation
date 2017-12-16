@@ -145,13 +145,10 @@ To restore on dev server:
 
 # AWS ECS setup
 
-Cluster is named after branch name.
-
-	ecs-cli configure -c $BRANCH -r ap-southeast-1 -p $PROFILE
-	ecs-cli up --vpc vpc-efc2838b --subnets subnet-846169e0,subnet-cf7b46b9 --instance-type t2.medium --capability-iam --keypair hendry
-
-For production:
-	ecs-cli up --vpc vpc-b93070dd --subnets subnet-9ae9e1fe,subnet-fcffc28a --instance-type t2.medium --capability-iam --keypair hendry,franck
+* [ECS overview](https://unee-t-media.s3-accelerate.amazonaws.com/2017/ecs-overview.mp4)
+* [ECS deploy](https://unee-t-media.s3-accelerate.amazonaws.com/2017/ecs-deploy.mp4)
+* `./deploy.sh` - deploy to staging/development cluster
+* `./deploy.sh -p` - deploy to production
 
 Refer to `ecs-cli compose service create -h` to create with a load balancer.
 
