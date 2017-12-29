@@ -30,14 +30,48 @@ done
 AWS_PROFILE=lmb-$STAGE
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
-if ! test -x /usr/local/bin/ecs-cli
+export COMMIT=$(git describe --always)
+
+if ! aws configure --profile $AWS_PROFILE list
 then
-	curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
+	echo Profile $AWS_PROFILE does not exist >&2
+
+	if ! test "$AWS_ACCESS_KEY_ID"
+	then
+		echo Missing $AWS_ACCESS_KEY_ID >&2
+		exit 1
+	fi
+
+	echo Attempting to setup one from the environment >&2
+	aws configure set profile.lmb-${STAGE}.aws_access_key_id $AWS_ACCESS_KEY_ID
+	aws configure set profile.lmb-${STAGE}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	aws configure set profile.lmb-${STAGE}.region ap-southeast-1
+
+	if ! aws configure --profile $AWS_PROFILE list
+	then
+		echo Profile $AWS_PROFILE does not exist >&2
+		exit 1
+	fi
+
+fi
+
+if ! hash ecs-cli
+then
+	echo Please install https://github.com/aws/amazon-ecs-cli and ensure it is in your \$PATH
+	echo curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
+	exit 1
+else
+	ecs-cli -version
 fi
 
 ecs-cli configure --cluster master --region ap-southeast-1 --compose-service-name-prefix ecscompose-service-
 test -f aws-env.$STAGE && source aws-env.$STAGE
 
-envsubst < AWS-docker-compose.yml > docker-compose-bugzilla.yml
+service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
+echo Deploying $service with commit $COMMIT >&2
 
-/usr/local/bin/ecs-cli compose --aws-profile $AWS_PROFILE -p bugzilla -f docker-compose-bugzilla.yml service up
+envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
+
+ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up --timeout 7
+
+ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps

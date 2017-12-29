@@ -4,6 +4,7 @@ services:
 - docker
 
 install:
+ - sed -i "s/header_addl_info.*/header_addl_info = \"$(git describe --always)\"/g" ./custom/index.html.tmpl
  - docker build -t uneet/bugzilla-customisation .
 
 after_success:
@@ -11,3 +12,11 @@ after_success:
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
     docker push uneet/bugzilla-customisation;
     fi
+
+# https://docs.travis-ci.com/user/deployment/script/
+deploy:
+  provider: script
+  script: bash deploy.sh
+  skip_cleanup: true
+  on:
+      branch: master
