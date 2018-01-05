@@ -12,6 +12,7 @@ before_install:
 
 install:
  - sed -i "s/header_addl_info.*/header_addl_info = \"$(git describe --always)\"/g" ./custom/index.html.tmpl
+ - grep header_addl_info ./custom/index.html.tmpl
  - docker build -t uneet/bugzilla-customisation .
 
 after_success:
