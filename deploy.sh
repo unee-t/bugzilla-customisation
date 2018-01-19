@@ -1,5 +1,6 @@
 #!/bin/bash
 
+date
 STAGE=dev
 
 # Usage info
@@ -75,3 +76,4 @@ envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up --timeout 7
 
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
+date
