@@ -3,12 +3,14 @@ Requires [docker](https://www.docker.com/) &
 
 # Development servers
 
+* [AWS_PROFILE](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) `uneet-dev` AWS account # 812644853088
 * [Bugzilla](https://dev.dashboard.unee-t.com)
 * [Meteor](https://dev.case.unee-t.com)
 * db.dev.unee-t.com
 
 # Production servers
 
+* [AWS_PROFILE](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) `uneet-prod` AWS account # 192458993663
 * [Bugzilla](https://dashboard.unee-t.com)
 * [Meteor](https://case.unee-t.com)
 * db.prod.unee-t.com
@@ -26,19 +28,10 @@ setup phases of {bugzilla,db} being a bit difficult to co-ordinate with docker c
 If you are using the default primed sql/demo state username;password are:
 
 	administrator@example.com;administrator
-	anabelle@example.com;anabelle
-	celeste@example.com;celeste
-	jocelyn@example.com;jocelyn
-	lawrence@example.com;lawrence
-	leonel@example.com;leonel
-	marina@example.com;marina
-	marley@example.com;marley
-	marvin@example.com;marvin
-	michael@example.com;michael
-	regina@example.com;regina
-	sabrina@example.com;sabrina
 
-Else if not sql/demo see [bugzilla_admin](bugzilla_admin)
+Else if not sql/demo see [bugzilla_admin](bugzilla_admin) or perhaps
+https://github.com/unee-t/bz-database where work is ongoing to prime the
+database.
 
 # Bugzilla configuration notes
 
@@ -78,7 +71,7 @@ http://localhost:8082/ see [environment](.env) for credentials
 
 Or upon the dev server:
 
-	curl -i https://dev.dashboard.unee-t.com/rest/bug/1?api_key=$(aws --profile lmb-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
+	curl -i https://dev.dashboard.unee-t.com/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
 
 # Build
 
@@ -91,8 +84,8 @@ You shouldn't need to do this since normally we should use our [Docker hosted Bu
 Secrets are managed in [AWS's parameter
 store](https://ap-southeast-1.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#Parameters:sort=Name).
 
-Assuming the profiles `lmb-dev` is setup for development AWS account
-8126-4485-3088 and `lmb-prod` for 192458993663, the `aws-env.dev` and
+Assuming the profiles `uneet-dev` is setup for development AWS account
+8126-4485-3088 and `uneet-prod` for 192458993663, the `aws-env.dev` and
 `aws-env.prod` will be sourced and [aws-cli will fetch the secrets](https://github.com/aws/aws-cli/issues/2950).
 
 * MONGO_PASSWORD
@@ -102,11 +95,11 @@ Assuming the profiles `lmb-dev` is setup for development AWS account
 
 The root user for RDS (the database) should be reserved for administrative tasks:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile lmb-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 Bugzilla connects to the database using the 'bugzilla' user:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile lmb-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 [How to create the bugzilla user](https://github.com/unee-t/bugzilla-customisation/issues/15)
 
