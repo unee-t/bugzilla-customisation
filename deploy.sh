@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/bash -e
 
-date
+echo "START $0 $(date)"
 STAGE=dev
 
 # Usage info
@@ -32,6 +32,19 @@ AWS_PROFILE=uneet-$STAGE
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 export COMMIT=$(git describe --always)
+
+# Run deploy hooks
+for hook in deploy-hooks/*
+do
+	[[ -x $hook ]] || continue
+	if "$hook"
+	then
+		echo OK: "$hook"
+	else
+		echo FAIL: "$hook"
+		exit 1
+	fi
+done
 
 if ! aws configure --profile $AWS_PROFILE list
 then
@@ -76,4 +89,5 @@ envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up --timeout 7
 
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
-date
+
+echo "END $0 $(date)"
