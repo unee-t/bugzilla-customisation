@@ -63,6 +63,7 @@ services:
          # Atm regenerate this by hand https://github.com/unee-t/bugzilla-customisation/issues/9
        - BUGZILLA_ADMIN_KEY=sEcZvQfD5Lx6OUyel5m2x7wnbWiZYdxLzcWPVwLe
        - MONGO_URL=mongodb://mongo:27017/mydatabase
+       - MAIL_URL=${MAIL_URL}
 
     mongo:
       image: mongo
