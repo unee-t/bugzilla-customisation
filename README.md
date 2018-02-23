@@ -147,3 +147,31 @@ Refer to `ecs-cli compose service create -h` to create with a load balancer.
 
 * [Development account](https://812644853088.signin.aws.amazon.com/console)
 * [Production account](https://192458993663.signin.aws.amazon.com/console)
+
+# Local demo install notes
+
+Launch ec2 install with the
+[ecsInstanceRole](https://console.aws.amazon.com/iam/home?region=ap-southeast-1#/roles/ecsInstanceRole)
+with has parameter store access permissions. Ensure the Security Group allows
+**All TCP** else you won't be access the demo.
+
+Install Docker and git:
+
+	sudo yum install docker git
+
+Setup docker permissions:
+
+	sudo gpasswd -a ${USER} docker
+	sudo systemctl restart docker
+	logout
+
+And ssh back in...
+
+Install docker compose:
+
+	sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+	sudo chmod +x /usr/local/bin/docker-compose
+
+Now get everything running:
+
+	make up
