@@ -24,3 +24,4 @@ curl -o /opt/bugzilla/data/params.json ${PARAMS_URL}
 . /etc/apache2/envvars
 
 /usr/sbin/apache2 -D FOREGROUND
+#/bin/bash -c "while true; do sleep 1; done"
