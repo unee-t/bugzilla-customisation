@@ -1,0 +1,13 @@
+for stage in dev prod
+do
+	echo $stage
+	aws --profile uneet-$stage ecs list-tasks --cluster master | jq -r .taskArns[] | while read task
+	do
+		aws --profile uneet-$stage ecs describe-tasks --cluster master --tasks $task | jq -r .tasks[].taskDefinitionArn | while read taskdef
+		do
+			echo task definition: $taskdef
+			aws --profile uneet-$stage ecs describe-task-definition --task-definition $taskdef | jq '.taskDefinition.containerDefinitions[].environment[] | select(.name=="COMMIT").value'
+		done
+
+	done
+done

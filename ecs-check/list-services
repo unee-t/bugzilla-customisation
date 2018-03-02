@@ -1,0 +1,8 @@
+for stage in dev prod
+do
+	echo $stage
+	aws --profile uneet-$stage ecs list-services --cluster master | jq -r .serviceArns[] | while read service
+	do
+		aws --profile uneet-$stage ecs describe-services --cluster master --services $service --query services[0].deploymentConfiguration
+	done
+done
