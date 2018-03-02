@@ -3,6 +3,8 @@ services:
     bugzilla:
       image: uneet/bugzilla-customisation
       restart: on-failure
+      mem_reservation: 1g
+      mem_limit: 0
       ports:
         - 80:80
       environment:
