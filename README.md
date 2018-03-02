@@ -93,13 +93,13 @@ Assuming the profiles `uneet-dev` is setup for development AWS account
 * SES_SMTP_PASSWORD
 * BUGZILLA_ADMIN_KEY
 
-The root user for RDS (the database) should be reserved for administrative tasks:
-
-	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
-
-Bugzilla connects to the database using the 'bugzilla' user:
+Bugzilla connects to the database using the 'bugzilla' user, for staging/dev:
 
 	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+
+For production:
+
+	mysql -h db.prod.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-prod ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 [How to create the bugzilla user](https://github.com/unee-t/bugzilla-customisation/issues/15)
 
