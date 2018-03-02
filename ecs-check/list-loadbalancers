@@ -1,0 +1,20 @@
+#!/bin/bash
+for stage in dev prod
+do
+	echo $stage
+	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
+	do
+			echo cluster: $cluster
+	aws --profile uneet-$stage ecs list-services --cluster $cluster | jq -r .serviceArns[] | while read service
+	do
+		echo aws --profile uneet-$stage ecs describe-services --cluster $cluster --services $service
+		aws --profile uneet-$stage ecs describe-services --cluster $cluster --services $service | jq -r ".services[].loadBalancers[].targetGroupArn" | 
+			while read target
+			do
+				echo target $target
+				aws --profile uneet-$stage elbv2 describe-target-groups --target-group-arns $target
+				aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target
+			done
+	done
+	done
+done
