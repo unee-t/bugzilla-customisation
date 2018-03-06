@@ -32,5 +32,19 @@
     </div>
 
     [% Hook.process("end") %]
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+	switch (window.location.hostname) {
+			case "localhost":
+				document.getElementById("titles").style.backgroundColor = "#ef9b06"
+				document.getElementById("footer").style.backgroundColor = "#ef9b06"
+				break
+			case "dev.dashboard.unee-t.com":
+				document.getElementById("titles").style.backgroundColor = "#1c9fc1"
+				document.getElementById("footer").style.backgroundColor = "#1c9fc1"
+				break
+	}
+})
+</script>
   </body>
 </html>
