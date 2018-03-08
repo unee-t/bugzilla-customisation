@@ -221,6 +221,15 @@
 	<link rel="apple-touch-icon-precomposed" href="https://unee-t.com/favicon/cropped-favicon-180x180.png"/>
 	<meta name="msapplication-TileImage" content="https://unee-t.com/favicon/cropped-favicon-270x270.png"/>
     [% Hook.process("additional_header") %]
+
+<!-- Google Analytics -->
+<script>
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', 'UA-100139142-7', 'auto');
+ga('send', 'pageview');
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+<!-- End Google Analytics -->
   </head>
 
   <body [% IF onload %] onload="[% onload %]"[% END %]
