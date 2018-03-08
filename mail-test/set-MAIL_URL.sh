@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STAGE=${STAGE:-dev}
+STAGE=${STAGE:-demo}
 
 urlencode() {
 	local LANG=C i c e=''

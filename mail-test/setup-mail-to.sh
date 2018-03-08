@@ -1,11 +1,11 @@
 #!/bin/bash
 
-STAGE=${STAGE:-dev}
+STAGE=${STAGE:-demo}
 
 EMAILPREFIX=""
-if test "$STAGE" == "dev"
+if test "$STAGE" != "prod"
 then
-	EMAILPREFIX="dev."
+	EMAILPREFIX="${STAGE}."
 fi
 
 if ! test "$1"
