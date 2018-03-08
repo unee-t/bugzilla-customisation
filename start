@@ -18,7 +18,7 @@ SED
 # Verify bugzilla setup
 ./checksetup.pl bugzilla_admin
 
-curl -o /opt/bugzilla/data/params.json ${PARAMS_URL}
+curl -f -o /opt/bugzilla/data/params.json ${PARAMS_URL}
 
 # Start apache2
 . /etc/apache2/envvars
