@@ -6,5 +6,5 @@ export MYSQL_PORT=3306
 export MYSQL_USER=uneet
 export PARAMS_URL=https://raw.githubusercontent.com/unee-t/bugzilla-customisation/master/params/demo-params.json
 export SES_SMTP_PASSWORD=$(aws --profile uneet-demo ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export SES_SMTP_USERNAME=AKIAJ6YYXTEVZZ6XOW7A
+export SES_SMTP_USERNAME=$(aws --profile uneet-demo ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
 export SES_VERIFIED_SENDER=demo.case@unee-t.com

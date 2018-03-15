@@ -10,5 +10,5 @@ export MYSQL_USER=bugzilla
 export PARAMS_URL=https://raw.githubusercontent.com/unee-t/bugzilla-customisation/master/params/prod-params.json
 export ROOT_URL=https://case.unee-t.com
 export SES_SMTP_PASSWORD=$(aws --profile uneet-prod ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export SES_SMTP_USERNAME=AKIAIX736LQPICQGFX2A
+export SES_SMTP_USERNAME=$(aws --profile uneet-prod ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
 export SES_VERIFIED_SENDER=case@unee-t.com
