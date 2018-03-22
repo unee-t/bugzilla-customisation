@@ -1,7 +1,10 @@
 #!/bin/bash
-for stage in dev prod
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+for stage in dev prod demo
 do
-	echo $stage
+	echo "--> $stage <--"
 	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
 	do
 			echo cluster: $cluster
@@ -14,6 +17,19 @@ do
 				echo target $target
 				aws --profile uneet-$stage elbv2 describe-target-groups --target-group-arns $target
 				aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target
+				if echo $target | grep bugzilla
+				then
+					stickiness=$(aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target | 
+						jq -r '.Attributes[]|select(.Key=="stickiness.enabled")|.Value')
+						#jq -r '.Attributes|.[]|select(.Key=="stickiness.enabled")|.Value')
+					if test $stickiness != "true"
+					then
+						echo ""
+						echo -e ${RED}ERROR${NC}: $target missing stickiness
+						echo ""
+						echo ""
+					fi
+				fi
 			done
 	done
 	done

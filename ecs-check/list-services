@@ -1,5 +1,5 @@
 #!/bin/bash
-for stage in dev prod
+for stage in dev prod demo
 do
 	echo $stage
 	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
