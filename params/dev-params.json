@@ -90,7 +90,7 @@
    "use_mailer_queue" : "0",
    "use_see_also" : "1",
    "useclassification" : "1",
-   "usemenuforusers" : "1",
+   "usemenuforusers" : "0",
    "useqacontact" : "0",
    "user_info_class" : "CGI",
    "user_verify_class" : "DB",
