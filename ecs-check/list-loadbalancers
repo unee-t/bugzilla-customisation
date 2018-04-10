@@ -20,8 +20,7 @@ do
 				if echo $target | grep bugzilla
 				then
 					stickiness=$(aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target | 
-						jq -r '.Attributes[]|select(.Key=="stickiness.enabled")|.Value')
-						#jq -r '.Attributes|.[]|select(.Key=="stickiness.enabled")|.Value')
+						jq -r '.Attributes| from_entries."stickiness.enabled"')
 					if test $stickiness != "true"
 					then
 						echo ""
