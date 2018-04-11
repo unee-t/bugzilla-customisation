@@ -175,3 +175,10 @@ Install docker compose:
 Now get everything running:
 
 	make up
+
+You can also have a look at this [video explainer - How to install Unee-T on AWS EC2](https://vimeo.com/264168929) for step by step instructions on how to do this.
+
+# Demo users:
+
+When you use the docker image, we create Demo users and demo units.
+Details about these demo users and demo units can be found on the [documentation about the demo environment](https://documentation.unee-t.com/2018/03/01/introduction-to-the-demo-environment/)
