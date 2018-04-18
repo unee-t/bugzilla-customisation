@@ -3,7 +3,7 @@ export BUGZILLA_URL=https://dev.dashboard.unee-t.com
 export MONGO_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MONGO_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 export MONGO_CONNECT="dev-shard-00-00-qxxao.mongodb.net:27017,dev-shard-00-01-qxxao.mongodb.net:27017,dev-shard-00-02-qxxao.mongodb.net:27017/test?ssl=true&replicaSet=Dev-shard-0&authSource=admin"
 export MYSQL_DATABASE=bugzilla
-export MYSQL_HOST=db.dev.unee-t.com
+export MYSQL_HOST=auroradb.dev.unee-t.com
 export MYSQL_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 export MYSQL_PORT=3306
 export MYSQL_USER=bugzilla
