@@ -182,3 +182,13 @@ You can also have a look at this [video explainer - How to install Unee-T on AWS
 
 When you use the docker image, we create Demo users and demo units.
 Details about these demo users and demo units can be found on the [documentation about the demo environment](https://documentation.unee-t.com/2018/03/01/introduction-to-the-demo-environment/)
+
+# Logs on Cloudwatch
+
+How to filter for 5xx errors:
+
+	[..., request=*HTTP*, status_code=5*,]
+
+Be mindful that you will have a _Log stream_ for each instance!
+
+<img src="https://s.natalian.org/2018-05-30/1527665299_2558x1406.png">
