@@ -4,16 +4,16 @@ Requires [docker](https://www.docker.com/) &
 # Development servers
 
 * [AWS_PROFILE](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) `uneet-dev` AWS account # 812644853088
-* [Bugzilla](https://dev.dashboard.unee-t.com)
-* [Meteor](https://dev.case.unee-t.com)
-* db.dev.unee-t.com
+* [Bugzilla](https://dashboard.dev.unee-t.com)
+* [Meteor](https://case.dev.unee-t.com)
+* auroradb.dev.unee-t.com
 
 # Production servers
 
 * [AWS_PROFILE](https://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html) `uneet-prod` AWS account # 192458993663
 * [Bugzilla](https://dashboard.unee-t.com)
 * [Meteor](https://case.unee-t.com)
-* db.prod.unee-t.com
+* auroradb.unee-t.com
 
 # Run
 
@@ -71,7 +71,7 @@ http://localhost:8082/ see [environment](.env) for credentials
 
 Or upon the dev server:
 
-	curl -i https://dev.dashboard.unee-t.com/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
+	curl -i https://dashboard.dev.unee-t.com/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
 
 # Build
 
@@ -95,11 +95,11 @@ Assuming the profiles `uneet-dev` is setup for development AWS account
 
 Bugzilla connects to the database using the 'bugzilla' user, for staging/dev:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+	mysql -h auroradb.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 For production:
 
-	mysql -h db.prod.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-prod ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
+	mysql -h auroradb.unee-t.com -P 3306 -u root --password=$(aws --profile uneet-prod ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
 
 [How to create the bugzilla user](https://github.com/unee-t/bugzilla-customisation/issues/15)
 
@@ -125,7 +125,7 @@ Restore:
 
 To restore on dev server:
 
-	mysql -h db.dev.unee-t.com -P 3306 -u bugzilla --password=SECRET bugzilla < demo.sql
+	mysql -h auroradb.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla < demo.sql
 
 # Debug mysql queries locally
 
