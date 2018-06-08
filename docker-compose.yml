@@ -25,6 +25,17 @@ services:
       networks:
         - network
 
+    apienroll:
+      image: uneet/apienroll
+      ports:
+          - 4000:9000
+      environment:
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+      networks:
+            - network
 
     unit:
       image: uneet/unit
@@ -38,10 +49,10 @@ services:
       networks:
             - network
 
-    apienroll:
-      image: uneet/apienroll
+    invite:
+      image: uneet/invite
       ports:
-          - 4000:9000
+          - 4002:9000
       environment:
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
