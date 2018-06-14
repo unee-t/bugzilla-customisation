@@ -15,7 +15,7 @@ Requires [docker](https://www.docker.com/) &
 * [Meteor](https://case.unee-t.com)
 * auroradb.unee-t.com
 
-# Run
+# Developing locally
 
 	make up
 	make down
@@ -23,7 +23,7 @@ Requires [docker](https://www.docker.com/) &
 You might need to do a `make ${up,down,up}` to make it all work due to the
 setup phases of {bugzilla,db} being a bit difficult to co-ordinate with docker compose.
 
-# Login info set by sql/demo.sql.gz
+# Primed by sql/demo.sql.gz
 
 If you are using the default primed sql/demo state username;password are:
 
@@ -32,6 +32,10 @@ If you are using the default primed sql/demo state username;password are:
 Else if not sql/demo see [bugzilla_admin](bugzilla_admin) or perhaps
 https://github.com/unee-t/bz-database where work is ongoing to prime the
 database.
+
+Initial steps for working with **unee-t/frontend** is setting an API key and
+setting that as the
+[BUGZILLA_ADMIN_KEY](https://github.com/unee-t/frontend/blob/master/.env.sample).
 
 # Bugzilla configuration notes
 
@@ -83,25 +87,6 @@ You shouldn't need to do this since normally we should use our [Docker hosted Bu
 
 Secrets are managed in [AWS's parameter
 store](https://ap-southeast-1.console.aws.amazon.com/ec2/v2/home?region=ap-southeast-1#Parameters:sort=Name).
-
-Assuming the profiles `uneet-dev` is setup for development AWS account
-8126-4485-3088 and `uneet-prod` for 192458993663, the `aws-env.dev` and
-`aws-env.prod` will be sourced and [aws-cli will fetch the secrets](https://github.com/aws/aws-cli/issues/2950).
-
-* MONGO_PASSWORD
-* MYSQL_PASSWORD
-* SES_SMTP_PASSWORD
-* BUGZILLA_ADMIN_KEY
-
-Bugzilla connects to the database using the 'bugzilla' user, for staging/dev:
-
-	mysql -h auroradb.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
-
-For production:
-
-	mysql -h auroradb.unee-t.com -P 3306 -u root --password=$(aws --profile uneet-prod ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla
-
-[How to create the bugzilla user](https://github.com/unee-t/bugzilla-customisation/issues/15)
 
 ## About email
 
