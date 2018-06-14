@@ -51,15 +51,13 @@ services:
 
     invite:
       image: uneet/invite
-      ports:
-          - 4002:9000
+      network_mode: host
       environment:
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-      networks:
-            - network
+            CASE_HOST: http://127.0.0.1:3000
 
     db:
       image: mariadb
@@ -85,28 +83,6 @@ services:
         - db
      networks:
         - network
-
-    meteor:
-      image: ulexus/meteor
-      ports:
-       - "8080:3000"
-      networks:
-                - network
-      environment:
-       - BUNDLE_URL=https://unee-t-media.s3-accelerate.amazonaws.com/frontend/master.tar.gz
-       - ROOT_URL=http://local.unee-t.com
-       - BUGZILLA_URL=http://bugzilla
-         # Atm regenerate this by hand https://github.com/unee-t/bugzilla-customisation/issues/9
-       - BUGZILLA_ADMIN_KEY=sEcZvQfD5Lx6OUyel5m2x7wnbWiZYdxLzcWPVwLe
-       - MONGO_URL=mongodb://mongo:27017/mydatabase
-       - MAIL_URL=${MAIL_URL}
-
-    mongo:
-      image: mongo
-      ports:
-      - "27017:27017"
-      networks:
-                - network
 
 networks:
     network:
