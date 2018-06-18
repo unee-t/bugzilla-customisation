@@ -7,6 +7,9 @@ ADD start /opt/
 
 RUN ./checksetup.pl
 
+RUN ln -sf /proc/self/fd/1 /var/log/apache2/access.log && \
+    ln -sf /proc/self/fd/1 /var/log/apache2/error.log
+
 # Run start script
 CMD ["/opt/start"]
 
