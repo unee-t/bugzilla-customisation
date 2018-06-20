@@ -49,7 +49,7 @@
    "letsubmitterchoosemilestone" : "0",
    "letsubmitterchoosepriority" : "1",
    "mail_delivery_method" : "Test",
-   "mailfrom" : "dev.case@unee-t.com",
+   "mailfrom" : "case.local@unee-t.com",
    "maintainer" : "",
    "makeproductgroups" : "0",
    "max_search_results" : "10000",
