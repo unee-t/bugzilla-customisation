@@ -94,7 +94,7 @@
    "useqacontact" : "0",
    "user_info_class" : "CGI",
    "user_verify_class" : "DB",
-   "usestatuswhiteboard" : "0",
+   "usestatuswhiteboard" : "1",
    "usetargetmilestone" : "0",
    "usevisibilitygroups" : "1",
    "utf8" : "1",
