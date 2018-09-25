@@ -49,6 +49,8 @@ services:
       networks:
             - network
 
+    # Running on port 9000 https://github.com/unee-t/invite/blob/master/Dockerfile
+    # We run as network type host since we to be able to address the CASE_HOST
     invite:
       image: uneet/invite
       network_mode: host

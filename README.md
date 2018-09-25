@@ -17,25 +17,28 @@ Requires [docker](https://www.docker.com/) &
 
 # Developing locally
 
+To initialise / reset the database for development:
+
+	make clean
+
+Initial users are:
+
+	administrator@example.com;administrator
+	leonel@example.com;leonel
+
+BUGZILLA_ADMIN_KEY=forlocaldevtestingonly should be set in https://github.com/unee-t/frontend/blob/master/.env.sample
+
+Normal day to day usage once SQL is primed:
+
 	make up
 	make down
 
 You might need to do a `make ${up,down,up}` to make it all work due to the
 setup phases of {bugzilla,db} being a bit difficult to co-ordinate with docker compose.
 
-# Primed by sql/demo.sql.gz
-
 If you are using the default primed sql/demo state username;password are:
 
 	administrator@example.com;administrator
-
-Else if not sql/demo see [bugzilla_admin](bugzilla_admin) or perhaps
-https://github.com/unee-t/bz-database where work is ongoing to prime the
-database.
-
-Initial steps for working with **unee-t/frontend** is setting an API key and
-setting that as the
-[BUGZILLA_ADMIN_KEY](https://github.com/unee-t/frontend/blob/master/.env.sample).
 
 # Bugzilla configuration notes
 
@@ -57,7 +60,7 @@ Largely co-ordinated by environment varibles in:
 Note that the **BUGZILLA_ADMIN_KEY** aka the API key which AFAIK can only be
 setup on a running Bugzilla install via the Web interface. RE https://github.com/unee-t/bugzilla-customisation/issues/9
 
-# Debug
+# Debug your Docker image by entering it
 
 	docker exec -it docker_bugzilla_1 /bin/bash
 
@@ -172,8 +175,12 @@ Details about these demo users and demo units can be found on the [documentation
 
 How to filter for 5xx errors:
 
-	[..., request=*HTTP*, status_code=5*,]
+	[..., request = *HTTP*, status_code = 5**, , ,]
 
-Be mindful that you will have a _Log stream_ for each instance!
+https://media.dev.unee-t.com/2018-08-23/bugzilla-debug.mp4
 
-<img src="https://s.natalian.org/2018-05-30/1527665299_2558x1406.png">
+# Why slow?
+
+https://media.dev.unee-t.com/2018-08-23/targetresponsetime.mp4
+
+https://github.com/unee-t/whyslow
