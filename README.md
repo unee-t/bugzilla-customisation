@@ -70,6 +70,23 @@ The prefix `docker_` might be different on your system.
 
 http://localhost:8082/ see [environment](.env) for credentials
 
+# Release process for production
+
+Consider doing this at a quiet time though not on a Friday afternoon as
+developers would like to relax typically then like everyone else.
+
+Release manager needs to ensure a seamless UX for the end user by:
+
+1. Track and read commits since last release
+2. Communicate with developers about the current stability and anything pending
+3. Conduct tests on https://case.dev.unee-t.com/ (often most time consuming job) and try offload this to https://uilicious.com/
+4. If everything looks good, a judgement call is made and the release is **tagged* and pushed
+5. Follow up: Track the [CI/CD](https://travis-ci.org/unee-t/frontend) actually deployed the changes
+6. **Verify COMMIT in HTML header** `curl -s https://case.unee-t.com | grep COMMIT`
+7. [View ECS events](https://media.dev.unee-t.com/2018-10-03/meteor.png) for any issues. [Tail logs](https://github.com/TylerBrock/saw) for anything untoward
+8. Write release notes aka communicate with users about new features or fixes that make their lives easier
+9. Solicit feedback from users
+
 # JSON API
 
 <https://bugzilla.readthedocs.io/en/latest/api/>
