@@ -1,4 +1,5 @@
-#!/bin/bash -e
+#!/bin/bash
+set -e
 
 echo "START $0 $(date)"
 STAGE=dev
@@ -36,7 +37,7 @@ done
 AWS_PROFILE=uneet-$STAGE
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
-export COMMIT=$(git describe --always)
+export COMMIT=$(git rev-parse --short HEAD)
 
 # Run deploy hooks
 for hook in deploy-hooks/*
@@ -89,9 +90,15 @@ test -f aws-env.$STAGE && source aws-env.$STAGE
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
 echo Deploying $service with commit $COMMIT >&2
 
+# Ensure docker compose file's STAGE env is empty for production
+test "$STAGE" == prod && export STAGE=""
+
 envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
-ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up --timeout 7
+ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up \
+	--deployment-max-percent 100 \
+	--deployment-min-healthy-percent 0 \
+	--timeout 7
 
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
 
