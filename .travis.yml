@@ -1,19 +1,21 @@
 sudo: required
 language: generic
 services:
-- docker
+  - docker
 
 before_install:
-  - curl https://install.meteor.com | /bin/sh
-  - export PATH="$HOME/.meteor:$PATH"
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
-  - curl -o $HOME/.local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x $HOME/.local/bin/ecs-cli
+  - curl -o $HOME/.local/bin/ecs-cli \
+    https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && \
+    chmod +x $HOME/.local/bin/ecs-cli
 
 install:
- - sed -i "s/header_addl_info.*/header_addl_info = \"$(git describe --always)\"/g" ./custom/index.html.tmpl
- - grep header_addl_info ./custom/index.html.tmpl
- - docker build -t uneet/bugzilla-customisation .
+  - sed -i \
+    "s/header_addl_info.*/header_addl_info = \"$(git describe --always)\"/g" \
+    ./custom/index.html.tmpl
+  - grep header_addl_info ./custom/index.html.tmpl
+  - docker build -t uneet/bugzilla-customisation .
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" ]; then
@@ -21,22 +23,55 @@ after_success:
     docker push uneet/bugzilla-customisation;
     fi
 
-# https://docs.travis-ci.com/user/deployment/script/
-deploy:
- - provider: script
-   script: AWS_ACCESS_KEY_ID=$AWS_812644853088_ID AWS_SECRET_ACCESS_KEY=$AWS_812644853088_SECRET bash deploy.sh
-   skip_cleanup: true
-   on:
-      branch: master
- - provider: script
-   # deploy to production, given that it's a tagged commit
-   script: AWS_ACCESS_KEY_ID=$AWS_192458993663_ID AWS_SECRET_ACCESS_KEY=$AWS_192458993663_SECRET bash deploy.sh -p
-   skip_cleanup: true
-   on:
-     tags: true
- - provider: script
-   # deploy to demo, given that it's a tagged commit
-   script: AWS_ACCESS_KEY_ID=$AWS_915001051872_ID AWS_SECRET_ACCESS_KEY=$AWS_915001051872_SECRET bash deploy.sh -d
-   skip_cleanup: true
-   on:
-     tags: true
+matrix:
+  include:
+    - stage: test and build
+    - stage: deploy master
+      install: skip
+      script: skip
+      deploy:  # https://docs.travis-ci.com/user/deployment/script/
+        - provider: script
+          script:
+            - AWS_ACCESS_KEY_ID=$AWS_812644853088_ID \
+              AWS_SECRET_ACCESS_KEY=$AWS_812644853088_SECRET \
+              ./deploy.sh
+          skip_cleanup: true
+          on:
+            branch: master
+    - stage: deploy tags
+      install: skip
+      script: skip
+      deploy:
+        - provider: script
+          # deploy to production, given that it's a tagged commit
+          script:
+            - AWS_ACCESS_KEY_ID=$AWS_192458993663_ID \
+              AWS_SECRET_ACCESS_KEY=$AWS_192458993663_SECRET \
+              ./deploy.sh -p
+          skip_cleanup: true
+          on:
+            tags: true
+    - stage: deploy tags
+      install: skip
+      script: skip
+      deploy:
+        - provider: script
+          # deploy to demo, given that it's a tagged commit
+          script:
+            - AWS_ACCESS_KEY_ID=$AWS_915001051872_ID \
+              AWS_SECRET_ACCESS_KEY=$AWS_915001051872_SECRET \
+              ./deploy.sh -d
+          skip_cleanup: true
+          on:
+            tags: true
+
+stages:
+  - name: test and build
+  - name: deploy tags
+    if: tag IS present
+  - name: deploy master
+    if: branch = master AND type != pull_request
+
+env:
+  global:
+    - COMMIT=${TRAVIS_COMMIT::7}
