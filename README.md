@@ -183,6 +183,8 @@ Now get everything running:
 
 You can also have a look at this [video explainer - How to install Unee-T on AWS EC2](https://vimeo.com/264168929) for step by step instructions on how to do this.
 
+Make sure your images are upto date: `docker-compose pull`
+
 # Demo users:
 
 When you use the docker image, we create Demo users and demo units.
