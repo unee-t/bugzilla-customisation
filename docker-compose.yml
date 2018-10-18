@@ -55,7 +55,7 @@ services:
       image: uneet/invite
       network_mode: host
       environment:
-            MYSQL_HOST: localhost
+            MYSQL_HOST: 127.0.0.1
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
