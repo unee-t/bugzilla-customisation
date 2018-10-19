@@ -4,6 +4,7 @@ services:
   - docker
 
 before_install:
+  - pyenv global 2.7.14 # For removing SNIMissingWarning warnings
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
   - curl -o $HOME/.local/bin/ecs-cli
