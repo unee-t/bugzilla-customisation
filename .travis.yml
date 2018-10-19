@@ -38,7 +38,7 @@ matrix:
         on:
           branch: master
     - env: DEPLOY=demo
-      if: branch = master
+      if: tag IS present
       deploy:
         provider: script
         skip_cleanup: true
