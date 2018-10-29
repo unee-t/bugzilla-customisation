@@ -72,7 +72,6 @@ services:
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       volumes:
             - ./mariadb:/var/lib/mysql
-            - ./sql:/docker-entrypoint-initdb.d
             - ./sql-conf.d:/etc/mysql/conf.d
       networks:
             - network

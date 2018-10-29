@@ -17,28 +17,40 @@ Requires [docker](https://www.docker.com/) &
 
 # Developing locally
 
+We used to start from a prime sql, but that had a couple of drawbacks:
+
+* The prime sql schema was often out of date or unused/untested
+* When starting from scratch, you had to manually create users `Accounts.createUser` to sync the [Frontend](https://github.com/unee-t/frontend)
+* The dev environment is more likely to have an existing / interesting bug state to be fixed locally
+
+The idea now is to start from a **snapshot** of the remote development (dev)
+environment. Our remote dev environment is hosted on AWS and so are all the
+secrets, so you really need to get access or a copy of the credentials from one
+of the existing Unee-T developers.
+
+Finally your Frontend's Mongo state must be in sync! You need to take a snapshot using
+https://github.com/unee-t/frontend/blob/master/backup/dump.sh & then `mongorestore
+-h 127.0.0.1 --port 3001 -d meteor $(date "+dev-%Y%m%d")/meteor` after a `meteor reset`.
+
 To initialise / reset the database for development:
 
 	make clean
+	export MYSQL_ROOT_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption
+--query Parameters[0].Value --output text)
+	# Get a snapshot of dev
+	mysqldump -h auroradb.dev.unee-t.com -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > dev-backup.sql
 
-Initial users are:
+Make sure your local .env is correctly setup with `./env-setup.bash`
 
-	administrator@example.com;administrator
-	leonel@example.com;leonel
-
-BUGZILLA_ADMIN_KEY=forlocaldevtestingonly should be set in https://github.com/unee-t/frontend/blob/master/.env.sample
-
-Normal day to day usage once SQL is primed:
-
+	docker-compose up -d db # Just start the database at first, should be empty
+	# Restore dev snapshot
+	mysql -h 127.0.0.1 -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla < dev-backup.sql
 	make up
-	make down
 
-You might need to do a `make ${up,down,up}` to make it all work due to the
-setup phases of {bugzilla,db} being a bit difficult to co-ordinate with docker compose.
+The dashboard administrator username / password is:
 
-If you are using the default primed sql/demo state username;password are:
-
-	administrator@example.com;administrator
+	aws --profile uneet-dev ssm get-parameters --names BZFE_ADMIN_USER --with-decryption --query Parameters[0].Value --output text
+	aws --profile uneet-dev ssm get-parameters --names BZFE_ADMIN_PASS --with-decryption --query Parameters[0].Value --output text
 
 # Bugzilla configuration notes
 
@@ -46,9 +58,8 @@ Bugzilla is setup by a variety of sources:
 
 * the initial [vanilla stable bugzilla base image](https://github.com/unee-t/bugzilla)
 * \*-params.json - seemingly just for URL and mailfrom address set via public URLs
-* the sql - primed in development enviroments by sql/demo.sql.gz
 * localconfig - created with the start script to set database connection parameters
-* bugzilla_admin - for initial administrator user/pass
+* bugzilla_admin - for initial administrator user/pass (only used when starting from a blank slate)
 * custom skin and templates - set via the Dockerfile
 
 Largely co-ordinated by environment varibles in:
@@ -91,11 +102,7 @@ Release manager needs to ensure a seamless UX for the end user by:
 
 <https://bugzilla.readthedocs.io/en/latest/api/>
 
-	curl http://localhost:8081/rest/bug/1 | jq
-
-Or upon the dev server:
-
-	curl -i https://dashboard.dev.unee-t.com/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
+	curl http://localhost:8081/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text) | jq
 
 # Build
 
@@ -118,23 +125,9 @@ How to test if email is working:
 
 Video about testing email: https://s.natalian.org/2017-10-27/uneetmail.mp4
 
-# State snapshots
-
-Save:
-
-	mysqldump -h 127.0.0.1 -P 3306 -u mysql --password=jai7Paib bugzilla > demo.sql
-
-Restore:
-
-	mysql -h 127.0.0.1 -P 3306 -u mysql --password=jai7Paib bugzilla < dev.sql
-
-To restore on dev server:
-
-	mysql -h auroradb.dev.unee-t.com -P 3306 -u bugzilla --password=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text) bugzilla < demo.sql
-
 # Debug mysql queries locally
 
-	innotop -h 127.0.0.1 -P 3306 -u root --password=uniti
+	innotop -h 127.0.0.1 -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD
 
 # How to check for mail when in test mode
 
