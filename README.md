@@ -38,7 +38,7 @@ To initialise / reset the database for development:
 	export MYSQL_ROOT_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption
 --query Parameters[0].Value --output text)
 	# Get a snapshot of dev
-	mysqldump -h auroradb.dev.unee-t.com -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > dev-backup.sql
+	mysqldump -R -h auroradb.dev.unee-t.com -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > dev-backup.sql
 
 Make sure your local .env is correctly setup with `./env-setup.bash`
 
