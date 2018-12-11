@@ -24,7 +24,7 @@ var transporter = nodemailer.createTransport('${MAIL_URL}');
 
 // setup e-mail data with unicode symbols
 var mailOptions = {
-    from: '${STAGE} Unee-T Case <case${EMAILPREFIX}@unee-t.com>', // sender address
+    from: '${STAGE} Unee-T Case <case@case.${EMAILPREFIX}unee-t.com>', // sender address
     to: '${1}', // list of receivers
     subject: 'Hello ✔', // Subject line
     text: 'Hello world ?', // plaintext body
