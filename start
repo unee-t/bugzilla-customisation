@@ -16,7 +16,7 @@ s/webservergroup *= *'[a-zA-Z0-9]\+'/webservergroup = 'www-data'/
 SED
 
 echo "Removing rederive_regex_groups() call"
-sed -i '/_rederive_regex_groups();/d' /opt/bugzilla-5.0.4/Bugzilla/Install/DB.pm
+sed -i '/_rederive_regex_groups();/d' /opt/*/Bugzilla/Install/DB.pm
 
 # Verify bugzilla setup
 ./checksetup.pl bugzilla_admin
