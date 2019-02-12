@@ -1,13 +1,13 @@
 version: '2'
 services:
     bugzilla:
-      image: uneet/bugzilla-customisation
-      restart: on-failure
-      mem_reservation: 1g
-      mem_limit: 3g # assuming a t2.medium host with 4GB of RAM
-      ports:
-        - 80:80
-      environment:
+        image: uneet/bugzilla-customisation
+        restart: on-failure
+        mem_reservation: 1g
+        mem_limit: 3g  # assuming a t2.medium host with 4GB of RAM
+        ports:
+            - 80:80
+        environment:
             SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
             SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
             SES_VERIFIED_SENDER: ${SES_VERIFIED_SENDER}
@@ -18,8 +18,9 @@ services:
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             PARAMS_URL: ${PARAMS_URL}
             COMMIT: ${COMMIT}
-      logging:
+        logging:
             driver: awslogs
             options:
-              awslogs-region: ap-southeast-1
-              awslogs-group: bugzilla
+                awslogs-region: ap-southeast-1
+                awslogs-group: bugzilla
+                awslogs-stream-prefix: ecs
