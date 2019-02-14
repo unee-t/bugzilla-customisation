@@ -28,9 +28,9 @@ environment. Our remote dev environment is hosted on AWS and so are all the
 secrets, so you really need to get access or a copy of the credentials from one
 of the existing Unee-T developers.
 
-Finally your Frontend's Mongo state must be in sync! You need to take a snapshot using
-https://github.com/unee-t/frontend/blob/master/backup/dump.sh & then `mongorestore
--h 127.0.0.1 --port 3001 -d meteor $(date "+dev-%Y%m%d")/meteor` after a `meteor reset`.
+Finally your Frontend's Mongo state must be in sync! Use scripts in
+https://github.com/unee-t/frontend/blob/master/backup/ to backup and restore
+Mongo.
 
 To initialise / reset the database for development:
 

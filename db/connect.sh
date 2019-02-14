@@ -48,4 +48,4 @@ echo Connecting to ${STAGE^^} $(domain $STAGE)
 MYSQL_PASSWORD=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 MYSQL_USER=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_USER --with-decryption --query Parameters[0].Value --output text)
 
-echo mysql -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla
+mysql -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla
