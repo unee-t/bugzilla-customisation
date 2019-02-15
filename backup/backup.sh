@@ -45,5 +45,5 @@ then
 else
 	export MYSQL_ROOT_PASSWORD=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 	export MYSQL_HOST=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_HOST --with-decryption --query Parameters[0].Value --output text)
-	mysqldump --column-statistics=0 -R -h $MYSQL_HOST -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > $STAGE-backup-$(date +%s).sql
+	mysqldump --single-transaction --skip-lock-tables --column-statistics=0 -R -h $MYSQL_HOST -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > $STAGE-backup-$(date +%s).sql
 fi
