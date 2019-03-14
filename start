@@ -18,7 +18,9 @@ SED
 echo "Removing rederive_regex_groups() call"
 sed -i '/_rederive_regex_groups();/d' /opt/*/Bugzilla/Install/DB.pm
 
-curl -f -o /opt/bugzilla/data/params.json ${PARAMS_URL}
+curl --create-dirs -f -o /opt/bugzilla/data/params.json ${PARAMS_URL}
+chmod -R g+rwx /opt/bugzilla/data
+chown -R :www-data /opt/bugzilla/data
 
 # Start apache2
 . /etc/apache2/envvars
