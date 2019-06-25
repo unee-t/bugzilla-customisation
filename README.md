@@ -17,11 +17,8 @@ Requires [docker](https://www.docker.com/) &
 
 # Developing locally
 
-We used to start from a prime sql, but that had a couple of drawbacks:
-
-* The prime sql schema was often out of date or unused/untested
-* When starting from scratch, you had to manually create users `Accounts.createUser` to sync the [Frontend](https://github.com/unee-t/frontend)
-* The dev environment is more likely to have an existing / interesting bug state to be fixed locally
+We used to start from a [prime sql](https://github.com/unee-t/bz-database), but
+now we being from existing development snapshots.
 
 The idea now is to start from a **snapshot** of the remote development (dev)
 environment. Our remote dev environment is hosted on AWS and so are all the
@@ -44,7 +41,7 @@ Make sure your local .env is correctly setup with `./env-setup.bash`
 
 	docker-compose up -d db # Just start the database at first, should be empty
 	# Restore dev snapshot
-	mysql -h 127.0.0.1 -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla < dev-backup.sql
+	mysql -h db -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla < dev-backup.sql
 	make up
 
 The dashboard administrator username / password is:

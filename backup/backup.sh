@@ -41,9 +41,10 @@ shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 if test $AWS_PROFILE == uneet-localhost
 then
-	echo mongorestore -h 127.0.0.1 --drop --port 27017 $dir
+	export MYSQL_ROOT_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
+	echo mysqldump -B -R -h 127.0.0.1 -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla
 else
 	export MYSQL_ROOT_PASSWORD=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 	export MYSQL_HOST=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_HOST --with-decryption --query Parameters[0].Value --output text)
-	mysqldump --single-transaction --skip-lock-tables --ignore-table=bugzilla.attach_data --column-statistics=0 -R -h $MYSQL_HOST -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > $STAGE-backup-$(date +%s).sql
+	mysqldump -B --single-transaction --skip-lock-tables --ignore-table=bugzilla.attach_data --column-statistics=0 -R -h $MYSQL_HOST -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > $STAGE-backup-$(date +%s).sql
 fi

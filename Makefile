@@ -11,7 +11,7 @@ build:
 	docker build -t uneet/bugzilla-customisation .
 
 down:
-	docker-compose down
+	docker-compose down -v
 
 pull:
 	docker-compose pull
