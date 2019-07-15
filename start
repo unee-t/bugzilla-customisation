@@ -18,7 +18,6 @@ SED
 echo "Removing rederive_regex_groups() call"
 sed -i '/_rederive_regex_groups();/d' /opt/*/Bugzilla/Install/DB.pm
 
-echo Running checksetup
 ./checksetup.pl bugzilla_admin
 
 mkdir -p /opt/bugzilla/data/assets
@@ -28,6 +27,8 @@ chown -R :www-data /opt/bugzilla/data
 
 # Start apache2
 . /etc/apache2/envvars
+
+sed -i "s,Database version 2.18,$(git describe --always)," /opt/bugzilla/template/en/custom/index.html.tmpl
 
 # Tweak mod_perl performance to allow it 400MB of RAM
 sed -i 's,Apache2::SizeLimit->set_max_unshared_size(45_000);,Apache2::SizeLimit->set_max_unshared_size(400_000);,' /opt/bugzilla/mod_perl.pl
