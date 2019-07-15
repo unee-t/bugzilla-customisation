@@ -1,11 +1,11 @@
 version: '2'
 services:
     bugzilla:
-      image: uneet/bugzilla-customisation
-      restart: on-failure
-      ports:
-        - 8081:80
-      environment: # Setup by local .env file
+        image: uneet/bugzilla-customisation
+        restart: on-failure
+        ports:
+            - 8081:80
+        environment: # Setup by local .env file
             SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
             SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
             SES_VERIFIED_SENDER: ${SES_VERIFIED_SENDER}
@@ -16,45 +16,39 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             PARAMS_URL: ${PARAMS_URL}
-      depends_on:
-        - db
-      volumes:
+        depends_on:
+            - db
+        volumes:
             - ./custom:/opt/bugzilla/template/en/custom
             - ./skin:/opt/bugzilla/skins/contrib/skin
             - ./extensions/UneeTBridge:/opt/bugzilla/extensions/UneeTBridge
-      networks:
-        - network
 
     apienroll:
-      image: uneet/apienroll
-      ports:
-          - 4000:9000
-      environment:
+        image: uneet/apienroll
+        ports:
+            - 4000:9000
+        environment:
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-      networks:
-            - network
 
     unit:
-      image: uneet/unit
-      ports:
-          - 4001:9000
-      environment:
+        image: uneet/unit
+        ports:
+            - 4001:9000
+        environment:
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-      networks:
-            - network
 
-    # Running on port 9000 https://github.com/unee-t/invite/blob/master/Dockerfile
-    # We run as network type host since we to be able to address the CASE_HOST
+# Running on port 9000 https://github.com/unee-t/invite/blob/master/Dockerfile
+# We run as network type host since we to be able to address the CASE_HOST
     invite:
-      image: uneet/invite
-      network_mode: host
-      environment:
+        image: uneet/invite
+        network_mode: host
+        environment:
             MYSQL_HOST: 127.0.0.1
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
@@ -62,29 +56,21 @@ services:
             CASE_HOST: http://127.0.0.1:3000
 
     db:
-      image: mariadb
-      ports:
-        - 3306:3306
-      environment:
+        image: mariadb
+        ports:
+            - 3306:3306
+        environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      volumes:
+        volumes:
             - ./mariadb:/var/lib/mysql
             - ./sql-conf.d:/etc/mysql/conf.d
-      networks:
-            - network
 
     adminer:
-     image: adminer
-     ports:
-        - 8082:8080
-     depends_on:
-        - db
-     networks:
-        - network
-
-networks:
-    network:
-        driver: bridge
+        image: adminer
+        ports:
+            - 8082:8080
+        depends_on:
+            - db
