@@ -1,7 +1,7 @@
 version: '2'
 services:
     bugzilla:
-        image: uneet/bugzilla-customisation
+        image: uneet/bugzilla-customisation:synthesis
         restart: on-failure
         ports:
             - 8081:80
