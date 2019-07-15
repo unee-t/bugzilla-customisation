@@ -1,7 +1,7 @@
 version: '2'
 services:
     bugzilla:
-        image: uneet/bugzilla-customisation:a0642039b7941aa952ba7c5dc855596b201798a5
+        image: uneet/bugzilla-customisation:a064203-t2
         restart: on-failure
         mem_reservation: 1g
         mem_limit: 3g  # assuming a t2.medium host with 4GB of RAM

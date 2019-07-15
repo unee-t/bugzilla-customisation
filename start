@@ -29,5 +29,8 @@ chown -R :www-data /opt/bugzilla/data
 # Start apache2
 . /etc/apache2/envvars
 
+# Tweak mod_perl performance to allow it 400MB of RAM
+sed -i 's,Apache2::SizeLimit->set_max_unshared_size(45_000);,Apache2::SizeLimit->set_max_unshared_size(400_000);,' /opt/bugzilla/mod_perl.pl
+
 /usr/sbin/apache2 -D FOREGROUND
 #/bin/bash -c "while true; do sleep 1; done"
