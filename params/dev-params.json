@@ -70,7 +70,7 @@
   "rememberlogin": "on",
   "requirelogin": "1",
   "search_allow_no_criteria": "1",
-  "shadowdb": "1",
+  "shadowdb": "bugzilla",
   "shadowdbhost": "twoam2-cluster.cluster-ro-c5eg6u2xj9yy.ap-southeast-1.rds.amazonaws.com",
   "shadowdbport": "3306",
   "shadowdbsock": "",
