@@ -1,5 +1,4 @@
 #!/bin/sh -e
-# Set up bugzilla and run apache2
 
 envsubst < /etc/msmtprc.temp > /etc/msmtprc
 
@@ -18,17 +17,35 @@ SED
 echo "Removing rederive_regex_groups() call"
 sed -i '/_rederive_regex_groups();/d' /opt/*/Bugzilla/Install/DB.pm
 
-./checksetup.pl bugzilla_admin
-
 mkdir -p /opt/bugzilla/data/assets
-curl -f -o /opt/bugzilla/data/params.json ${PARAMS_URL}
+PARAMS=/opt/bugzilla/data/params.json
+curl -f -o $PARAMS "${PARAMS_URL}"
+if ! test -f $PARAMS
+then
+	"${PARAMS_URL}" failed to download
+	exit 1
+fi
+jq -c . $PARAMS
 chmod -R g+rwx /opt/bugzilla/data
 chown -R :www-data /opt/bugzilla/data
+
+./checksetup.pl bugzilla_admin
 
 # Start apache2
 . /etc/apache2/envvars
 
-sed -i "s,Database version 2.18,$(git describe --always)," /opt/bugzilla/template/en/custom/index.html.tmpl
+BZ_COMMIT=$(git --git-dir=/opt/bugzilla/.git describe --always)
+echo BZ_COMMIT: $BZ_COMMIT
+
+#TEMPLATE=/opt/bugzilla/template/en/custom/index.html.tmpl
+TEMPLATE=/opt/bugzilla/template/en/custom/index.html.tmpl
+if ! grep -q "header_addl_info" $TEMPLATE
+then
+	echo Template version replacement cannot be found, so cannot inject version into $TEMPLATE
+	exit 1
+fi
+sed -i "s/header_addl_info.*/header_addl_info = \"$BZ_COMMIT\"/g" $TEMPLATE
+grep header_addl_info $TEMPLATE
 
 # Tweak mod_perl performance to allow it 400MB of RAM
 sed -i 's,Apache2::SizeLimit->set_max_unshared_size(45_000);,Apache2::SizeLimit->set_max_unshared_size(400_000);,' /opt/bugzilla/mod_perl.pl
