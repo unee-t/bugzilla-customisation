@@ -97,7 +97,7 @@
    "usestatuswhiteboard" : "1",
    "usetargetmilestone" : "0",
    "usevisibilitygroups" : "1",
-   "utf8" : "1",
+   "utf8" : "utf8mb4",
    "webdotbase" : "",
    "webservice_email_filter" : "0",
    "whinedays" : "7"
