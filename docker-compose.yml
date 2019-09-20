@@ -29,7 +29,7 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         volumes:
-            # - /home/hendry/unee-t/bugzilla-customisation/backup/localhost-backup-1568357621.sql:/docker-entrypoint-initdb.d/main.sql
+            - /home/hendry/unee-t/bugzilla-customisation/demo-baseline.sql:/docker-entrypoint-initdb.d/main.sql
             - ./sql-conf.d:/etc/mysql/conf.d
 
     adminer:
@@ -50,14 +50,14 @@ services:
         environment:
             MONGO_URL: mongodb://mongo:27017/meteor
             ROOT_URL: http://mefe:3000
-            BUGZILLA_URL: http://bugzilla
+            BUGZILLA_URL: http://bugzilla:80
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
             BUGZILLA_ADMIN_KEY: ${BUGZILLA_ADMIN_KEY}
             CLOUDINARY_URL: ${CLOUDINARY_URL}
             CLOUDINARY_PRESET: ${CLOUDINARY_PRESET}
-            APIENROLL_LAMBDA_URL: http://localhost:4000
-            UNIT_CREATE_LAMBDA_URL: http://unit:4001
-            INVITE_LAMBDA_URL: http://invite:4002
+            APIENROLL_LAMBDA_URL: http://apienroll:9000
+            UNIT_CREATE_LAMBDA_URL: http://unit:9000
+            INVITE_LAMBDA_URL: http://invite:9000
 
     mongo:
         image: mongo
