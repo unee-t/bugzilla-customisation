@@ -51,5 +51,9 @@ else
 	export MYSQL_HOST=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_HOST --with-decryption --query Parameters[0].Value --output text)
 fi
 
-echo Restoring $1 to $STAGE $MYSQL_HOST 
-mysql -h $MYSQL_HOST -P 3306 -u root --password=$PASSWORD < $1
+read -p "Restore $1 to $STAGE $MYSQL_HOST ? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	mysql -h $MYSQL_HOST -P 3306 -u root --password=$PASSWORD < $1
+fi
