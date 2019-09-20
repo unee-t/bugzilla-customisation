@@ -19,38 +19,6 @@ services:
         depends_on:
             - db
 
-    apienroll:
-        image: uneet/apienroll
-        ports:
-            - 4000:9000
-        environment:
-            MYSQL_HOST: ${MYSQL_HOST}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-
-    unit:
-        image: uneet/unit
-        ports:
-            - 4001:9000
-        environment:
-            MYSQL_HOST: ${MYSQL_HOST}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-
-# Running on port 9000 https://github.com/unee-t/invite/blob/master/Dockerfile
-# We run as network type host since we to be able to address the CASE_HOST
-    invite:
-        image: uneet/invite
-        network_mode: host
-        environment:
-            MYSQL_HOST: 127.0.0.1
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
-            CASE_HOST: http://127.0.0.1:3000
-
     db:
         image: mysql:5.7
         ports:
@@ -61,7 +29,7 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         volumes:
-            - ./mariadb:/var/lib/mysql
+            # - /home/hendry/unee-t/bugzilla-customisation/backup/localhost-backup-1568357621.sql:/docker-entrypoint-initdb.d/main.sql
             - ./sql-conf.d:/etc/mysql/conf.d
 
     adminer:
@@ -70,3 +38,62 @@ services:
             - 8082:8080
         depends_on:
             - db
+
+    mefe: #aka frontend, CASE_HOST
+        image: uneet/frontend
+        restart: always
+        ports:
+            - 3000:3000
+        depends_on:
+            - mongo
+            - bugzilla
+        environment:
+            MONGO_URL: mongodb://mongo:27017/meteor
+            ROOT_URL: http://mefe:3000
+            BUGZILLA_URL: http://bugzilla
+            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+            BUGZILLA_ADMIN_KEY: ${BUGZILLA_ADMIN_KEY}
+            CLOUDINARY_URL: ${CLOUDINARY_URL}
+            CLOUDINARY_PRESET: ${CLOUDINARY_PRESET}
+            APIENROLL_LAMBDA_URL: http://localhost:4000
+            UNIT_CREATE_LAMBDA_URL: http://unit:4001
+            INVITE_LAMBDA_URL: http://invite:4002
+
+    mongo:
+        image: mongo
+        ports:
+            - 27017:27017
+
+    apienroll:
+        image: uneet/apienroll
+        ports:
+            - 4000:9000
+        environment:
+            PORT: 9000
+            MYSQL_HOST: db
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+
+    unit:
+        image: uneet/unit
+        ports:
+            - 4001:9000
+        environment:
+            PORT: 9000
+            MYSQL_HOST: db
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+
+    invite:
+        image: uneet/invite
+        ports:
+            - 4002:9000
+        environment:
+            PORT: 9000
+            MYSQL_HOST: db
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+            CASE_HOST: http://mefe:3000

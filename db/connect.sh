@@ -50,3 +50,4 @@ MYSQL_USER=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_USER --
 
 echo $STAGE
 echo mysql -s -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla
+mysql -s -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla

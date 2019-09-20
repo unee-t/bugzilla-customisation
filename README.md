@@ -37,6 +37,8 @@ To initialise / reset the database for development:
 	# Get a snapshot of dev
 	mysqldump -R -h auroradb.dev.unee-t.com -P 3306 -u root --password=$MYSQL_ROOT_PASSWORD bugzilla > dev-backup.sql
 
+You want to Aurora's [mock mysql.lambda_async](https://github.com/unee-t/bz-database/issues/137#issuecomment-523731990).
+
 Make sure your local .env is correctly setup with `./env-setup.bash`
 
 	docker-compose up -d db # Just start the database at first, should be empty
@@ -65,18 +67,11 @@ Largely co-ordinated by environment varibles in:
 * aws-env.dev for development / testing /staging
 * aws-env.prod for production
 
-Note that the **BUGZILLA_ADMIN_KEY** aka the API key which AFAIK can only be
-setup on a running Bugzilla install via the Web interface. RE https://github.com/unee-t/bugzilla-customisation/issues/9
+Note that the **BUGZILLA_ADMIN_KEY** needs to be in place on the table **user_api_keys**. Please study how https://github.com/unee-t/reset-demo works.
 
 # Debug your Docker image by entering it
 
-	docker exec -it docker_bugzilla_1 /bin/bash
-
-The prefix `docker_` might be different on your system.
-
-# Database explorer
-
-http://localhost:8082/ see [environment](.env) for credentials
+	docker exec -it bugzilla-customisation_bugzilla_1 /bin/bash
 
 # Release process for production
 
@@ -87,10 +82,10 @@ Release manager needs to ensure a seamless UX for the end user by:
 
 1. Track and read commits since last release
 2. Communicate with developers about the current stability and anything pending
-3. Conduct tests on https://case.dev.unee-t.com/ (often most time consuming job) and try offload this to https://uilicious.com/
+3. Conduct tests on https://case.demo.unee-t.com/ (often most time consuming job) and try offload this to https://uilicious.com/
 4. If everything looks good, a judgement call is made and the release is **tagged* and pushed
 5. Follow up: Track the [CI/CD](https://travis-ci.org/unee-t/frontend) actually deployed the changes
-6. **Verify COMMIT in HTML header** `curl -s https://case.unee-t.com | grep COMMIT`
+6. **Verify COMMIT in HTML header** `curl -s https://case.unee-t.com | grep COMMIT` or try https://version.dev.unee-t.com/
 7. [View ECS events](https://media.dev.unee-t.com/2018-10-03/meteor.png) for any issues. [Tail logs](https://github.com/TylerBrock/saw) for anything untoward
 8. Write release notes aka communicate with users about new features or fixes that make their lives easier
 9. Solicit feedback from users
@@ -101,11 +96,7 @@ Release manager needs to ensure a seamless UX for the end user by:
 
 	curl http://localhost:8081/rest/bug/1?api_key=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text) | jq
 
-# Build
-
-You shouldn't need to do this since normally we should use our [Docker hosted Bugzilla image](https://hub.docker.com/r/uneet/).
-
-	make build
+There are more examples in Postman.
 
 # Environment
 
@@ -142,43 +133,6 @@ Refer to `ecs-cli compose service create -h` to create with a load balancer.
 
 * [Development account](https://812644853088.signin.aws.amazon.com/console)
 * [Production account](https://192458993663.signin.aws.amazon.com/console)
-
-# Local demo install notes
-
-Launch ec2 install with the
-[ecsInstanceRole](https://console.aws.amazon.com/iam/home?region=ap-southeast-1#/roles/ecsInstanceRole)
-with has parameter store access permissions. Ensure the Security Group allows
-**All TCP** else you won't be access the demo.
-
-Install Docker and git:
-
-	sudo yum install docker git
-
-Setup docker permissions:
-
-	sudo gpasswd -a ${USER} docker
-	sudo systemctl restart docker
-	logout
-
-And ssh back in...
-
-Install docker compose:
-
-	sudo curl -L https://github.com/docker/compose/releases/download/1.19.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
-	sudo chmod +x /usr/local/bin/docker-compose
-
-Now get everything running:
-
-	make up
-
-You can also have a look at this [video explainer - How to install Unee-T on AWS EC2](https://vimeo.com/264168929) for step by step instructions on how to do this.
-
-Make sure your images are upto date: `docker-compose pull`
-
-# Demo users:
-
-When you use the docker image, we create Demo users and demo units.
-Details about these demo users and demo units can be found on the [documentation about the demo environment](https://documentation.unee-t.com/2018/03/01/introduction-to-the-demo-environment/)
 
 # Logs on Cloudwatch
 

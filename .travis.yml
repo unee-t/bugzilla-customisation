@@ -3,6 +3,11 @@ language: generic
 services:
   - docker
 
+env:
+  global:
+    - IMAGE_TAG=${TRAVIS_COMMIT::7}
+    - IMAGE_REPO_NAME=uneet/bugzilla-customisation
+
 before_install:
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
@@ -11,13 +16,14 @@ before_install:
     chmod +x $HOME/.local/bin/ecs-cli
 
 install:
-  - docker build -t uneet/bugzilla-customisation .
+  - docker build -t $IMAGE_REPO_NAME .
 
 after_success:
-  - if [[ "$TRAVIS_BRANCH" == master || -z "$TRAVIS_TAG" ]]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push uneet/bugzilla-customisation;
-    fi
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+  - docker build -t $IMAGE_REPO_NAME:latest .
+  - docker tag $IMAGE_REPO_NAME:latest $IMAGE_REPO_NAME:$IMAGE_TAG
+  - docker push $IMAGE_REPO_NAME:latest
+  - docker push $IMAGE_REPO_NAME:$IMAGE_TAG
 
 matrix:
   include:
