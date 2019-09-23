@@ -3,7 +3,7 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: uneet/bugzilla
+    IMAGE_REPO_NAME: uneet/bugzilla-customisation
   parameter-store:
     DOCKER_USERNAME: DOCKER_USERNAME
     DOCKER_PASSWORD: DOCKER_PASSWORD
@@ -32,7 +32,7 @@ phases:
       - echo Pushing build to Docker Hub...
       - docker push $IMAGE_REPO_NAME:latest
       - docker push $IMAGE_REPO_NAME:$IMAGE_TAG
-      - printf '[{"name":"%s","imageUri":"%s"}]' meteor $IMAGE_REPO_NAME:$IMAGE_TAG > $CODEBUILD_SRC_DIR/imagedefinitions.json
+      - printf '[{"name":"%s","imageUri":"%s"}]' bugzilla $IMAGE_REPO_NAME:$IMAGE_TAG > $CODEBUILD_SRC_DIR/imagedefinitions.json
 
 artifacts:
   files: imagedefinitions.json
