@@ -37,7 +37,6 @@ chown -R :www-data /opt/bugzilla/data
 BZ_COMMIT=$(git --git-dir=/opt/bugzilla/.git describe --always)
 echo BZ_COMMIT: $BZ_COMMIT
 
-#TEMPLATE=/opt/bugzilla/template/en/custom/index.html.tmpl
 TEMPLATE=/opt/bugzilla/template/en/custom/index.html.tmpl
 if ! grep -q "header_addl_info" $TEMPLATE
 then

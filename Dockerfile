@@ -16,7 +16,9 @@ RUN a2dissite 000-default
 
 # END STUFF FOR BASE IMAGE
 
-RUN git clone -b synthesis https://github.com/bugzilla/bugzilla.git /opt/bugzilla
+ARG BUGZILLA_BRANCH="5.2"
+
+RUN git clone -b $BUGZILLA_BRANCH https://github.com/bugzilla/bugzilla.git /opt/bugzilla
 WORKDIR /opt/bugzilla
 COPY gen-cpanfile.pl /usr/local/bin/gen-cpanfile.pl
 RUN perl Build.PL && \
