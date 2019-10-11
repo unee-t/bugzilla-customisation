@@ -16,7 +16,7 @@ RUN a2dissite 000-default
 
 # END STUFF FOR BASE IMAGE
 
-ARG BUGZILLA_BRANCH="5.2"
+ARG BUGZILLA_BRANCH="synthesis"
 
 RUN git clone -b $BUGZILLA_BRANCH https://github.com/bugzilla/bugzilla.git /opt/bugzilla
 WORKDIR /opt/bugzilla
