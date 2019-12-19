@@ -1,13 +1,13 @@
-export BUGZILLA_ADMIN_KEY_INS=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY --with-decryption --query Parameters[0].Value --output text)
-export BUGZILLA_URL_INS=https://dashboard-ins.dev.unee-t.com
-export MONGO_PASSWORD_INS=$(aws --profile uneet-dev ssm get-parameters --names MONGO_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export MONGO_CONNECT_INS="dev-shard-00-00-qxxao.mongodb.net:27017,dev-shard-00-01-qxxao.mongodb.net:27017,dev-shard-00-02-qxxao.mongodb.net:27017/test?ssl=true&replicaSet=Dev-shard-0&authSource=admin"
-export MYSQL_DATABASE_INS=bugzilla
-export MYSQL_HOST_INS=auroradb-ins.dev.unee-t.com
-export MYSQL_PASSWORD_INS=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export MYSQL_PORT_INS=3306
-export MYSQL_USER_INS=bugzilla
-export PARAMS_URL_INS=https://github.com/tuananh1508/bugzilla-customisation/blob/master/params/dev-params.json
-export SES_SMTP_PASSWORD_INS=$(aws --profile uneet-dev ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export SES_SMTP_USERNAME_INS=$(aws --profile uneet-dev ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
-export SES_VERIFIED_SENDER_INS=dev.case@unee-t.com
+export BUGZILLA_ADMIN_KEY=$(aws --profile uneet-dev ssm get-parameters --names BUGZILLA_ADMIN_KEY_INS --with-decryption --query Parameters[0].Value --output text)
+export BUGZILLA_URL=https://dashboard-ins.dev.unee-t.com
+export MONGO_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MONGO_PASSWORD_INS --with-decryption --query Parameters[0].Value --output text)
+export MONGO_CONNECT="dev-shard-00-00-qxxao.mongodb.net:27017,dev-shard-00-01-qxxao.mongodb.net:27017,dev-shard-00-02-qxxao.mongodb.net:27017/test?ssl=true&replicaSet=Dev-shard-0&authSource=admin"
+export MYSQL_DATABASE=bugzilla
+export MYSQL_HOST=auroradb-ins.dev.unee-t.com
+export MYSQL_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names MYSQL_PASSWORD_INS --with-decryption --query Parameters[0].Value --output text)
+export MYSQL_PORT=3306
+export MYSQL_USER=bugzilla
+export PARAMS_URL=https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/dev-params.json
+export SES_SMTP_PASSWORD=$(aws --profile uneet-dev ssm get-parameters --names SES_SMTP_PASSWORD_INS --with-decryption --query Parameters[0].Value --output text)
+export SES_SMTP_USERNAME=$(aws --profile uneet-dev ssm get-parameters --names SES_SMTP_USERNAME_INS --query Parameters[0].Value --output text)
+export SES_VERIFIED_SENDER=dev.case@unee-t.com
