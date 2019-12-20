@@ -8,12 +8,9 @@ STAGE=dev
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-p]
-
 By default, deploy to dev environment on AWS account 812644853088
-
 	-p          PRODUCTION 192458993663
 	-d          DEMO 915001051872
-
 EOF
 }
 
@@ -84,7 +81,7 @@ else
 	ecs-cli -version
 fi
 
-ecs-cli configure --cluster master --region ap-southeast-1 --compose-service-name-prefix ecscompose-service-
+ecs-cli configure --cluster unee-t-ins --region ap-southeast-1 --compose-service-name-prefix ecscompose-service-
 test -f aws-env.$STAGE && source aws-env.$STAGE
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
