@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STAGE=${STAGE:-demo}
+STAGE=${STAGE:-dev}
 
 urlencode() {
 	local LANG=C i c e=''
@@ -12,9 +12,9 @@ urlencode() {
 	echo "$e"
 }
 
-USER=$(aws --profile uneet-$STAGE ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
-PASS=$(aws --profile uneet-$STAGE ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
+USER=$(aws --profile ins-$STAGE ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
+PASS=$(aws --profile ins-$STAGE ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
 
 VALUE=$(printf smtps://%s:%s@email-smtp.us-west-2.amazonaws.com:465 $USER $(urlencode $PASS))
 
-aws --profile uneet-$STAGE ssm put-parameter --overwrite --type SecureString --name MAIL_URL --value ${VALUE}
+aws --profile ins-$STAGE ssm put-parameter --overwrite --type SecureString --name MAIL_URL --value ${VALUE}
