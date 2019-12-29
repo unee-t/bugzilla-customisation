@@ -1,8 +1,7 @@
 version: '2'
 services:
     bugzilla:
-        image: uneet/bugzilla-customisation:$COMMIT
-        restart: on-failure
+        image: uneet/bugzilla-customisation:latest
         mem_reservation: 1g
         mem_limit: 3g  # assuming a t2.medium host with 4GB of RAM
         ports:

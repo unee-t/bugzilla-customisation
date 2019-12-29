@@ -8,9 +8,9 @@ STAGE=dev
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-p]
-By default, deploy to dev environment on AWS account 812644853088
-	-p          PRODUCTION 192458993663
-	-d          DEMO 915001051872
+By default, deploy to dev environment on AWS account
+	-p          PRODUCTION
+	-d          DEMO
 EOF
 }
 
@@ -31,7 +31,7 @@ do
 			;;
 	esac
 done
-AWS_PROFILE=uneet-$STAGE
+AWS_PROFILE=ins-$STAGE
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 export COMMIT=$(git rev-parse --short HEAD)
@@ -81,7 +81,7 @@ else
 	ecs-cli -version
 fi
 
-ecs-cli configure --cluster unee-t-ins --region ap-southeast-1 --compose-service-name-prefix ecscompose-service-
+ecs-cli configure --cluster master --region ap-southeast-1
 test -f aws-env.$STAGE && source aws-env.$STAGE
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
@@ -92,7 +92,12 @@ test "$STAGE" == prod && export STAGE=""
 
 envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
+# https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
 ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up \
+	--target-group-arn ${BZFE_TARGET_ARN} \
+	--container-name bugzilla \
+	--container-port 80 \
+	--create-log-groups \
 	--deployment-max-percent 100 \
 	--deployment-min-healthy-percent 50 \
 	--timeout 7
