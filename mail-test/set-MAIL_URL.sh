@@ -1,20 +1,31 @@
 #!/bin/bash
 
-STAGE=${STAGE:-demo}
+STAGE=${STAGE:-dev}
 
 urlencode() {
-	local LANG=C i c e=''
-	for ((i=0;i<${#1};i++)); do
-		c=${1:$i:1}
-		[[ "$c" =~ [a-zA-Z0-9\.\~\_\-] ]] || printf -v c '%%%02X' "'$c"
-		e+="$c"
-	done
-	echo "$e"
+    # urlencode <string>
+    old_lc_collate=$LC_COLLATE
+    LC_COLLATE=C
+
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+
+    LC_COLLATE=$old_lc_collate
 }
 
-USER=$(aws --profile uneet-$STAGE ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
-PASS=$(aws --profile uneet-$STAGE ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
+getparam () {
+    aws --profile ins-${STAGE} ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
+}
+
+USER=$(getparam SES_SMTP_USERNAME)
+PASS=$(getparam SES_SMTP_PASSWORD)
 
 VALUE=$(printf smtps://%s:%s@email-smtp.us-west-2.amazonaws.com:465 $USER $(urlencode $PASS))
 
-aws --profile uneet-$STAGE ssm put-parameter --overwrite --type SecureString --name MAIL_URL --value ${VALUE}
+aws --profile ins-$STAGE ssm put-parameter --overwrite --type SecureString --name MAIL_URL --value ${VALUE}

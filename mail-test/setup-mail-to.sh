@@ -14,7 +14,14 @@ then
 	exit 1
 fi
 
-MAIL_URL=$(aws --profile uneet-${STAGE} ssm get-parameters --names MAIL_URL --with-decryption --query Parameters[0].Value --output text)
+getparam () {
+    aws --profile ins-${STAGE} ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
+}
+
+USER=$(getparam SES_SMTP_USERNAME)
+MAIL_URL=$(getparam MAIL_URL)
+PASS=$(getparam SES_SMTP_PASSWORD)
+SENDER=$(getparam SES_VERIFIED_SENDER)
 
 cat << END > index.js
 var nodemailer = require('nodemailer');
@@ -24,7 +31,7 @@ var transporter = nodemailer.createTransport('${MAIL_URL}');
 
 // setup e-mail data with unicode symbols
 var mailOptions = {
-    from: '${STAGE} Unee-T Case <case@case.${EMAILPREFIX}unee-t.com>', // sender address
+    from: '${SENDER}', // SES_VERIFIED_SENDER
     to: '${1}', // list of receivers
     subject: 'Hello ✔', // Subject line
     text: 'Hello world ?', // plaintext body
