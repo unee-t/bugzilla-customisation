@@ -2,21 +2,24 @@
 
 # Case 1: Stored on Travis Settings
   # For all environments:
-    # - DOCKER_CI_REPO_NAME <-- do we need that?
+    # - DOCKER_CI_REPO_NAME
     # - DOCKER_USERNAME
     # - DOCKER_PASSWORD
 
   #For dev environment:
     # - AWS_ACCOUNT_USER_ID_DEV
     # - AWS_ACCOUNT_SECRET_DEV
-
-  #For Demo environment:
-    # - AWS_ACCOUNT_USER_ID_DEMO
-    # - AWS_ACCOUNT_SECRET_DEMO
+    # - AWS_PROFILE_DEV <-- is this needed?
 
   #For Prod environment:
     # - AWS_ACCOUNT_USER_ID_PROD
     # - AWS_ACCOUNT_SECRET_PROD
+    # - AWS_PROFILE_PROD <-- is this needed?
+
+  #For Demo environment:
+    # - AWS_ACCOUNT_USER_ID_DEMO
+    # - AWS_ACCOUNT_SECRET_DEMO
+    # - AWS_PROFILE_DEMO <-- is this needed?
 
 # Case 2: Created when Travis CI runs
     # - IMAGE_TAG
@@ -57,7 +60,7 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEV
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEV
-            ./deploy.sh
+            ./deploy.sh -dev
         on:
           branch: master
     - env: DEPLOY=demo
@@ -68,7 +71,7 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEMO
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEMO
-            ./deploy.sh -d
+            ./deploy.sh -demo
         on:
           tags: true
     - env: DEPLOY=prod
@@ -79,6 +82,6 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_PROD
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_PROD
-            ./deploy.sh -p
+            ./deploy.sh -prod
         on:
           tags: true
