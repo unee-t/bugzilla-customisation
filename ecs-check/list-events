@@ -1,13 +1,15 @@
 #!/bin/bash
+
 for stage in dev prod demo
 do
 	echo $stage
-	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
+	source aws-env.$stage
+	aws --profile $AWS_PROFILE ecs list-clusters | jq -r .clusterArns[] | while read cluster
 	do
 			echo cluster: $cluster
-	aws --profile uneet-$stage ecs list-services --cluster $cluster | jq -r .serviceArns[] | while read service
+	aws --profile $AWS_PROFILE ecs list-services --cluster $cluster | jq -r .serviceArns[] | while read service
 	do
-		aws --profile uneet-$stage ecs describe-services --cluster $cluster --services $service --query services[0].events[].message
+		aws --profile $AWS_PROFILE ecs describe-services --cluster $cluster --services $service --query services[0].events[].message
 	done
 	done
 done
