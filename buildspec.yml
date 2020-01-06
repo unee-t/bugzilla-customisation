@@ -1,9 +1,15 @@
 ---
-version: 0.2
+version: 0.3
+
+# Variables needed for this script are stored on Travis Settings
+  # For all environments:
+    # - DOCKER_CI_REPO_NAME
+    # - DOCKER_USERNAME
+    # - DOCKER_PASSWORD
 
 env:
   variables:
-    IMAGE_REPO_NAME: uneet/bugzilla-customisation
+    IMAGE_REPO_NAME: DOCKER_CI_REPO_NAME
   parameter-store:
     DOCKER_USERNAME: DOCKER_USERNAME
     DOCKER_PASSWORD: DOCKER_PASSWORD
