@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This script created dependencies needed by the BZFE
+# This script creates dependencies to facilitate connection to the BZ Db
 #
 # We needs several variables that are maintained in different places:
 #
@@ -10,7 +10,6 @@
 #	- Variables stored in the aws-env.[stage] file
 #		- STAGE
 #		- MYSQL_HOST
-#		- AWS_PROFILE
 #		- MYSQL_USER
 #		- MYSQL_PASSWORD
 #		- MYSQL_DATABASE
@@ -44,7 +43,7 @@ show_help() {
 cat << EOF
 Usage: ${0##*/} [-p]
 
-Deploy the BZFE and BZ code on AWS account
+Connection to the BZ database
 	-dev		DEVELOPMENT	
 	-prod		PRODUCTION
 	-demo		DEMO

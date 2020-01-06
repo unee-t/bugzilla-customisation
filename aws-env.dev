@@ -21,6 +21,9 @@
 # Variables that are maintained in the AWS parameter store for the environment:
 
     export AWS_REGION=$(getparam DEFAULT_REGION)
+	export DOMAIN=$(getparam DOMAIN)
+
+	export API_ACCESS_TOKEN=$(getparam API_ACCESS_TOKEN)
 
 	export MYSQL_USER=$(getparam BUGZILLA_DB_USER)
 	export MYSQL_DATABASE=$(getparam BUGZILLA_DB_NAME)
@@ -37,3 +40,4 @@
 # Variables that are built from other variables:
 
     export AWS_PROFILE=$(getparam INSTALLATION_ID)-$STAGE
+	export BZDB_CHECK_HOST=dbcheck.$DOMAIN
