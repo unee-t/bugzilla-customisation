@@ -1,25 +1,19 @@
 #!/bin/bash
 
-# This script is created to dependencies needed by the BZFE
+# This script created dependencies needed by the BZFE
 #
 # We needs several variables that are maintained in different places:
 #
 # We needs several variables that are maintained in different places:
 #	- Variables stored in the Travis CI "Settings":
-#	  These are needed so that automated deployment are working as intended
-#		- AWS_DEFAULT_REGION <--- This is probably overkill since we have this in aws-env.[stage] variables
-#		- AWS_PROFILE_DEV
-#		- AWS_PROFILE_PROD
-#		- AWS_PROFILE_DEMO
-#
+#		n/a
 #	- Variables stored in the aws-env.[stage] file
 #		- STAGE
+#		- MYSQL_HOST
 #		- AWS_PROFILE
-#		- AWS_REGION
-#
-#	- Variables need to be set when 
-#		- Option 1: .travis.yml is called.
-#		- Option 2: when deploy.sh is called
+#		- MYSQL_USER
+#		- MYSQL_PASSWORD
+#		- MYSQL_DATABASE
 
 domain() {
 	case $1 in		
@@ -82,9 +76,6 @@ done
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 echo Connecting to ${STAGE^^} $(domain $STAGE)
-
-MYSQL_PASSWORD=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-MYSQL_USER=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_USER --with-decryption --query Parameters[0].Value --output text)
 
 echo $STAGE
 echo mysql -s -h $MYSQL_HOST -P 3306 -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
