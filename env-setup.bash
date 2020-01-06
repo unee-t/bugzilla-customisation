@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# this is only for a LOCAL installation
+
 if test -f .env
 then
 	echo .env already exists. Stopping.
