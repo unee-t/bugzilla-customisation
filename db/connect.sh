@@ -10,6 +10,7 @@
 #	- Variables stored in the aws-env.[stage] file
 #		- STAGE
 #		- MYSQL_HOST
+#		- MYSQL_PORT
 #		- MYSQL_USER
 #		- MYSQL_PASSWORD
 #		- MYSQL_DATABASE
@@ -77,5 +78,5 @@ shift "$((OPTIND-1))"   # Discard the options and sentinel --
 echo Connecting to ${STAGE^^} $(domain $STAGE)
 
 echo $STAGE
-echo mysql -s -h $MYSQL_HOST -P 3306 -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
-mysql -s -h $MYSQL_HOST -P 3306 -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
+echo mysql -s -h $MYSQL_HOST -P $MYSQL_PORT -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
+mysql -s -h $MYSQL_HOST -P $MYSQL_PORT -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
