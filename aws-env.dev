@@ -22,6 +22,7 @@
 
     export AWS_REGION=$(getparam DEFAULT_REGION)
 	export DOMAIN=$(getparam DOMAIN)
+	export INSTALLATION_ID=$(getparam INSTALLATION_ID)
 
 	export API_ACCESS_TOKEN=$(getparam API_ACCESS_TOKEN)
 
@@ -39,5 +40,5 @@
 
 # Variables that are built from other variables:
 
-    export AWS_PROFILE=$(getparam INSTALLATION_ID)-$STAGE
+    export AWS_PROFILE=$INSTALLATION_ID-$STAGE
 	export BZDB_CHECK_HOST=dbcheck.$DOMAIN
