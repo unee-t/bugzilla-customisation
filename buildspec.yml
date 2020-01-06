@@ -9,8 +9,9 @@ version: 0.3
 
 env:
   variables:
-    IMAGE_REPO_NAME: DOCKER_CI_REPO_NAME
+    # n/a
   parameter-store:
+    IMAGE_REPO_NAME: DOCKER_CI_REPO_NAME
     DOCKER_USERNAME: DOCKER_USERNAME
     DOCKER_PASSWORD: DOCKER_PASSWORD
 
