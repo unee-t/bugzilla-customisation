@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# We need to remove hard coded variables from there.
+
 set -x
 
 # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MariaDB.html#MariaDB.Concepts.SSLSupport
