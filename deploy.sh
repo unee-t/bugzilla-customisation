@@ -101,9 +101,9 @@ then
 	fi
 	echo $AWS_ACCESS_KEY_ID
 	echo Attempting to setup one from the environment >&2
-	aws configure set profile.${AWS_PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
-	aws configure set profile.${AWS_PROFILE}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-	aws configure set profile.${AWS_PROFILE}.region ${AWS_REGION}
+	aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+	aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
 	if ! aws configure --profile $AWS_PROFILE list
 	then
