@@ -56,32 +56,20 @@ matrix:
       if: branch = master
       deploy:
         provider: script
-        skip_cleanup: true
-        script:
-          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEV
-            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEV
-            ./deploy.sh dev
+        script: AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEV AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEV ./deploy.sh dev
         on:
           branch: master
     - env: DEPLOY=demo
       if: tag IS present
       deploy:
         provider: script
-        skip_cleanup: true
-        script:
-          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEMO
-            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEMO
-            ./deploy.sh demo
+        script: AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEMO AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEMO ./deploy.sh demo
         on:
           tags: true
     - env: DEPLOY=prod
       if: tag IS present
       deploy:
         provider: script
-        skip_cleanup: true
-        script:
-          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_PROD
-            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_PROD
-            ./deploy.sh prod
+        script: AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_PROD AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_PROD ./deploy.sh prod
         on:
           tags: true
