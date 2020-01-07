@@ -1,13 +1,44 @@
-getparam () {
-	aws --profile ins-dev ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
-}
-export MYSQL_USER=$(getparam BUGZILLA_DB_USER)
-export MYSQL_DATABASE=$(getparam BUGZILLA_DB_NAME)
-export MYSQL_HOST=$(getparam MYSQL_HOST)
-export MYSQL_PASSWORD=$(getparam BUGZILLA_DB_PASSWORD)
-export MYSQL_PORT=$(getparam MYSQL_PORT)
-export SES_SMTP_PASSWORD=$(getparam SES_SMTP_PASSWORD)
-export SES_SMTP_USERNAME=$(getparam SES_SMTP_USERNAME)
-export SES_VERIFIED_SENDER=$(getparam SES_VERIFIED_SENDER)
-export PARAMS_URL=https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/dev-params.json
-export BZFE_TARGET_ARN=$(getparam BZFE_TARGET_ARN)
+#!/bin/bash
+## This file stores all environment variables for the DEV environment for this repo
+
+# First, we create a procedure to retrieve the variables from the AWS parameter store
+# Make sure to 
+#   - configure your AWS CLI accordingly
+#   - update the profile you need to use to access these variables if needed
+
+	getparam () {
+		aws --profile ins-dev ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
+	}
+
+# Variables that are maintained in a dedicated file in this repo:
+
+	export PARAMS_URL=https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/dev-params.json
+
+# We prepare the hardcoded variables that we will need to deploy what's needed
+
+    export STAGE=dev
+
+# Variables that are maintained in the AWS parameter store for the environment:
+
+    export AWS_REGION=$(getparam DEFAULT_REGION)
+	export DOMAIN=$(getparam DOMAIN)
+	export INSTALLATION_ID=$(getparam INSTALLATION_ID)
+
+	export API_ACCESS_TOKEN=$(getparam API_ACCESS_TOKEN)
+
+	export MYSQL_USER=$(getparam BUGZILLA_DB_USER)
+	export MYSQL_DATABASE=$(getparam BUGZILLA_DB_NAME)
+	export MYSQL_HOST=$(getparam MYSQL_HOST)
+	export MYSQL_PASSWORD=$(getparam BUGZILLA_DB_PASSWORD)
+	export MYSQL_PORT=$(getparam MYSQL_PORT)
+
+	export SES_SMTP_PASSWORD=$(getparam SES_SMTP_PASSWORD)
+	export SES_SMTP_USERNAME=$(getparam SES_SMTP_USERNAME)
+	export SES_VERIFIED_SENDER=$(getparam SES_VERIFIED_SENDER)
+
+	export BZFE_TARGET_ARN=$(getparam BZFE_TARGET_ARN)
+
+# Variables that are built from other variables:
+
+    export AWS_PROFILE=$INSTALLATION_ID-$STAGE
+	export BZDB_CHECK_HOST=dbcheck.$DOMAIN

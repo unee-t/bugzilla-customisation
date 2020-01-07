@@ -1,3 +1,29 @@
+# Variables needed for this script are:
+
+# Case 1: Stored on Travis Settings
+  # For all environments:
+    # - DOCKER_CI_REPO_NAME
+    # - DOCKER_USERNAME
+    # - DOCKER_PASSWORD
+
+  #For dev environment:
+    # - AWS_ACCOUNT_USER_ID_DEV
+    # - AWS_ACCOUNT_SECRET_DEV
+    # - AWS_PROFILE_DEV <-- is this needed?
+
+  #For Prod environment:
+    # - AWS_ACCOUNT_USER_ID_PROD
+    # - AWS_ACCOUNT_SECRET_PROD
+    # - AWS_PROFILE_PROD <-- is this needed?
+
+  #For Demo environment:
+    # - AWS_ACCOUNT_USER_ID_DEMO
+    # - AWS_ACCOUNT_SECRET_DEMO
+    # - AWS_PROFILE_DEMO <-- is this needed?
+
+# Case 2: Created when Travis CI runs
+    # - IMAGE_TAG
+
 sudo: required
 language: generic
 services:
@@ -6,7 +32,6 @@ services:
 env:
   global:
     - IMAGE_TAG=${TRAVIS_COMMIT::7}
-    - IMAGE_REPO_NAME=uneet/bugzilla-customisation
 
 before_install:
   - pip install --user awscli
@@ -16,14 +41,14 @@ before_install:
     chmod +x $HOME/.local/bin/ecs-cli
 
 install:
-  - docker build -t $IMAGE_REPO_NAME .
+  - docker build -t $DOCKER_CI_REPO_NAME .
 
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-  - docker build -t $IMAGE_REPO_NAME:latest .
-  - docker tag $IMAGE_REPO_NAME:latest $IMAGE_REPO_NAME:$IMAGE_TAG
-  - docker push $IMAGE_REPO_NAME:latest
-  - docker push $IMAGE_REPO_NAME:$IMAGE_TAG
+  - docker build -t $DOCKER_CI_REPO_NAME:latest .
+  - docker tag $DOCKER_CI_REPO_NAME:latest $DOCKER_CI_REPO_NAME:$IMAGE_TAG
+  - docker push $DOCKER_CI_REPO_NAME:latest
+  - docker push $DOCKER_CI_REPO_NAME:$IMAGE_TAG
 
 matrix:
   include:
@@ -33,9 +58,9 @@ matrix:
         provider: script
         skip_cleanup: true
         script:
-          - AWS_ACCESS_KEY_ID=$AWS_812644853088_ID
-            AWS_SECRET_ACCESS_KEY=$AWS_812644853088_SECRET
-            ./deploy.sh
+          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEV
+            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEV
+            ./deploy.sh -dev
         on:
           branch: master
     - env: DEPLOY=demo
@@ -44,9 +69,9 @@ matrix:
         provider: script
         skip_cleanup: true
         script:
-          - AWS_ACCESS_KEY_ID=$AWS_915001051872_ID
-            AWS_SECRET_ACCESS_KEY=$AWS_915001051872_SECRET
-            ./deploy.sh -d
+          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEMO
+            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEMO
+            ./deploy.sh -demo
         on:
           tags: true
     - env: DEPLOY=prod
@@ -55,8 +80,8 @@ matrix:
         provider: script
         skip_cleanup: true
         script:
-          - AWS_ACCESS_KEY_ID=$AWS_192458993663_ID
-            AWS_SECRET_ACCESS_KEY=$AWS_192458993663_SECRET
-            ./deploy.sh -p
+          - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_PROD
+            AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_PROD
+            ./deploy.sh -prod
         on:
           tags: true

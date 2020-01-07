@@ -2,15 +2,16 @@
 for stage in dev prod demo
 do
 	echo $stage
-	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
+	source aws-env.$stage
+	aws --profile $AWS_PROFILE ecs list-clusters | jq -r .clusterArns[] | while read cluster
 	do
 	echo cluster: $cluster
-	aws --profile uneet-$stage ecs list-tasks --cluster $cluster | jq -r .taskArns[] | while read task
+	aws --profile $AWS_PROFILE ecs list-tasks --cluster $cluster | jq -r .taskArns[] | while read task
 		do
-		aws --profile uneet-$stage ecs describe-tasks --cluster $cluster --tasks $task | jq -r .tasks[].taskDefinitionArn | while read taskdef
+		aws --profile $AWS_PROFILE ecs describe-tasks --cluster $cluster --tasks $task | jq -r .tasks[].taskDefinitionArn | while read taskdef
 		do
 		echo task definition: $taskdef
-		aws --profile uneet-$stage ecs describe-task-definition --task-definition $taskdef | jq '.taskDefinition.containerDefinitions[].environment[] | select(.name=="COMMIT").value'
+		aws --profile $AWS_PROFILE ecs describe-task-definition --task-definition $taskdef | jq '.taskDefinition.containerDefinitions[].environment[] | select(.name=="COMMIT").value'
 		done
 		done
 	done

@@ -1,3 +1,6 @@
+# Some variables are environment dependant <-- we need to change that
+# We need to give more details on WHEN this is used (local deployment vs deployment on AWS)
+
 version: '2'
 services:
     bugzilla:
