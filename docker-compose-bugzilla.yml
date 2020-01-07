@@ -1,0 +1,30 @@
+# we need to update the hardcoded variables here
+
+version: '2'
+services:
+    bugzilla:
+        # This is a hardoded variable (need to optimize that)
+        image: uneetins/bugzilla-customisation:latest
+        # END This is a hardoded variable (need to optimize that)
+        mem_reservation: 1g
+        mem_limit: 3g  # assuming a t2.medium host with 4GB of RAM
+        ports:
+            - 80:80
+        environment:
+            SES_SMTP_USERNAME: AKIASU5ZFFAA6XHV73VH
+            SES_SMTP_PASSWORD: BDtrOVQy+42xiR70WfkQWbJA1v0/HHA/k6brk9yuPIry
+            SES_VERIFIED_SENDER: dev.dashboard.ins@unee-t.com
+            MYSQL_HOST: bzdb.dev.ins.unee-t.com
+            MYSQL_PORT: 3306
+            MYSQL_DATABASE: bugzilla
+            MYSQL_USER: bugzilla
+            MYSQL_PASSWORD: Dnm33)^7}ZhX,E)]
+            PARAMS_URL: https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/dev-params.json
+        logging:
+            driver: awslogs
+            options:
+                # This is a hardoded variable (need to optimize that)
+                awslogs-region: ap-southeast-1
+                awslogs-group: bugzilla
+                # END This is a hardoded variable (need to optimize that)
+                awslogs-stream-prefix: ecs
