@@ -33,11 +33,11 @@ echo "START $0 $(date)"
 # Usage info
 show_help() {
 cat << EOF
-Usage: ${0##*/} [-p]
+Usage: ${0##*/}
 Deploy the BZFE and BZ code on AWS account
-	-dev		DEVELOPMENT	
-	-prod       PRODUCTION
-	-demo       DEMO
+	dev 	DEVELOPMENT	
+	prod	PRODUCTION
+	demo	DEMO
 EOF
 }
 

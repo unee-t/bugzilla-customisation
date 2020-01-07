@@ -60,7 +60,7 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEV
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEV
-            ./deploy.sh -dev
+            ./deploy.sh dev
         on:
           branch: master
     - env: DEPLOY=demo
@@ -71,7 +71,7 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_DEMO
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_DEMO
-            ./deploy.sh -demo
+            ./deploy.sh demo
         on:
           tags: true
     - env: DEPLOY=prod
@@ -82,6 +82,6 @@ matrix:
         script:
           - AWS_ACCESS_KEY_ID=$AWS_ACCOUNT_USER_ID_PROD
             AWS_SECRET_ACCESS_KEY=$AWS_ACCOUNT_SECRET_PROD
-            ./deploy.sh -prod
+            ./deploy.sh prod
         on:
           tags: true
