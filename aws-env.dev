@@ -6,8 +6,10 @@
 #   - configure your AWS CLI accordingly
 #   - update the profile you need to use to access these variables if needed
 
+# This script is called as part of the Travis CI deployment routine
+# We can use the default aws profile configured in Travis CI settings to get the variables we need
 	getparam () {
-		aws --profile ins-dev ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
+		aws ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
 	}
 
 # Variables that are maintained in a dedicated file in this repo:
