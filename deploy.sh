@@ -44,15 +44,15 @@ EOF
 while getopts "pd" opt
 do
 	case $opt in
-		dev)
+		d)
 			echo "DEVELOPMENT" >&2
 			source aws-env.dev
 			;;
-		prod)
+		p)
 			echo "PRODUCTION" >&2
 			source aws-env.prod
 			;;
-		demo)
+		s)
 			echo "DEMO" >&2
 			source aws-env.demo
 			;;
