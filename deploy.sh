@@ -42,51 +42,52 @@ EOF
 }
 echo Attempting to setup one from the environment >&2
 echo Setting AWS Configure
-aws configure set profile.${AWS_PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
-aws configure set profile.${AWS_PROFILE}.aws_secret_access_key $AWS_ACCESS_KEY_ID
-aws configure set profile.${AWS_PROFILE}.region ${AWS_REGION}
+aws --version
+# aws configure set profile.${AWS_PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
+# aws configure set profile.${AWS_PROFILE}.aws_secret_access_key $AWS_ACCESS_KEY_ID
+# aws configure set profile.${AWS_PROFILE}.region ${AWS_REGION}
 
 # aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
 # aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 # aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
-while getopts "pd" opt
-do
-	case $opt in
-		d)
-			echo "DEVELOPMENT" >&2
-			source aws-env.dev
-			;;
-		p)
-			echo "PRODUCTION" >&2
-			source aws-env.prod
-			;;
-		s)
-			echo "DEMO" >&2
-			source aws-env.demo
-			;;
-		*)
-			show_help >&2
-			exit 1
-			;;
-	esac
-done
+# while getopts "pd" opt
+# do
+# 	case $opt in
+# 		d)
+# 			echo "DEVELOPMENT" >&2
+# 			source aws-env.dev
+# 			;;
+# 		p)
+# 			echo "PRODUCTION" >&2
+# 			source aws-env.prod
+# 			;;
+# 		s)
+# 			echo "DEMO" >&2
+# 			source aws-env.demo
+# 			;;
+# 		*)
+# 			show_help >&2
+# 			exit 1
+# 			;;
+# 	esac
+# done
 
-shift "$((OPTIND-1))"   # Discard the options and sentinel --
+# shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
-export COMMIT=$(git rev-parse --short HEAD)
+# export COMMIT=$(git rev-parse --short HEAD)
 
-# Run deploy hooks
-for hook in deploy-hooks/*
-do
-	[[ -x $hook ]] || continue
-	if "$hook"
-	then
-		echo OK: "$hook"
-	else
-		echo FAIL: "$hook"
-		exit 1
-	fi
-done
+# # Run deploy hooks
+# for hook in deploy-hooks/*
+# do
+# 	[[ -x $hook ]] || continue
+# 	if "$hook"
+# 	then
+# 		echo OK: "$hook"
+# 	else
+# 		echo FAIL: "$hook"
+# 		exit 1
+# 	fi
+# done
 
 # This is in case there is no aws cli profile
 # in that case, the aws profile needs to be created from scratch.
