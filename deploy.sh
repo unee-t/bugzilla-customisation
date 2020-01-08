@@ -91,10 +91,10 @@ done
 
 echo Attempting to setup one from the environment >&2
 aws --version
-echo $AWS_ACCESS_KEY_ID
-aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+# echo $AWS_ACCESS_KEY_ID
+# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
 # if ! aws configure --profile $AWS_PROFILE list
 # then
