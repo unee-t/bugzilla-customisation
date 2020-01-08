@@ -96,63 +96,63 @@ aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
 aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
-if ! aws configure --profile $AWS_PROFILE list
-then
-	# We tell the user about the issue
-	echo Profile $AWS_PROFILE does not exist >&2
+# if ! aws configure --profile $AWS_PROFILE list
+# then
+# 	# We tell the user about the issue
+# 	echo Profile $AWS_PROFILE does not exist >&2
 
-	if ! test "$AWS_ACCESS_KEY_ID"
-	then
-	# We tell the user about the issue
-		echo Missing $AWS_ACCESS_KEY_ID >&2
-		exit 1
-	fi
-	# echo Attempting to setup one from the environment >&2
-	# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-	# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-	# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+# 	if ! test "$AWS_ACCESS_KEY_ID"
+# 	then
+# 	# We tell the user about the issue
+# 		echo Missing $AWS_ACCESS_KEY_ID >&2
+# 		exit 1
+# 	fi
+# 	# echo Attempting to setup one from the environment >&2
+# 	# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+# 	# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+# 	# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
-	if ! aws configure --profile $AWS_PROFILE list
-	then
-	# We tell the user about the issue
-		echo Profile $AWS_PROFILE does not exist on your machine >&2
-		exit 1
-	fi
+# 	if ! aws configure --profile $AWS_PROFILE list
+# 	then
+# 	# We tell the user about the issue
+# 		echo Profile $AWS_PROFILE does not exist on your machine >&2
+# 		exit 1
+# 	fi
 
-fi
+# fi
 
-if ! hash ecs-cli
-then
-	# We tell the user about the issue
-	echo Please install https://github.com/aws/amazon-ecs-cli and ensure it is in your \$PATH
-	echo curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
-	exit 1
-else
-	# We display the current version intalled on the user's machine.
-	ecs-cli -version
-fi
+# if ! hash ecs-cli
+# then
+# 	# We tell the user about the issue
+# 	echo Please install https://github.com/aws/amazon-ecs-cli and ensure it is in your \$PATH
+# 	echo curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
+# 	exit 1
+# else
+# 	# We display the current version intalled on the user's machine.
+# 	ecs-cli -version
+# fi
 
-ecs-cli configure --cluster master --region $AWS_REGION
-test -f aws-env.$STAGE && source aws-env.$STAGE
+# ecs-cli configure --cluster master --region $AWS_REGION
+# test -f aws-env.$STAGE && source aws-env.$STAGE
 
-service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
-echo Deploying $service with commit $COMMIT >&2
+# service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
+# echo Deploying $service with commit $COMMIT >&2
 
-# Ensure docker compose file's STAGE env is empty for production
-test "$STAGE" == prod && export STAGE=""
+# # Ensure docker compose file's STAGE env is empty for production
+# test "$STAGE" == prod && export STAGE=""
 
-envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
+# envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
-# https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
-ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up \
-	--target-group-arn ${BZFE_TARGET_ARN} \
-	--container-name bugzilla \
-	--container-port 80 \
-	--create-log-groups \
-	--deployment-max-percent 100 \
-	--deployment-min-healthy-percent 50 \
-	--timeout 7
+# # https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
+# ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up \
+# 	--target-group-arn ${BZFE_TARGET_ARN} \
+# 	--container-name bugzilla \
+# 	--container-port 80 \
+# 	--create-log-groups \
+# 	--deployment-max-percent 100 \
+# 	--deployment-min-healthy-percent 50 \
+# 	--timeout 7
 
-ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
+# ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
 
-echo "END $0 $(date)"
+# echo "END $0 $(date)"
