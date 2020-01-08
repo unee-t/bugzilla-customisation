@@ -88,6 +88,14 @@ done
 #	  .travis.yml script is called.
 #	- The user has not configured his machine properly.
 
+
+echo Attempting to setup one from the environment >&2
+aws --version
+echo $AWS_ACCESS_KEY_ID
+aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+
 if ! aws configure --profile $AWS_PROFILE list
 then
 	# We tell the user about the issue
@@ -99,11 +107,10 @@ then
 		echo Missing $AWS_ACCESS_KEY_ID >&2
 		exit 1
 	fi
-	echo $AWS_ACCESS_KEY_ID
-	echo Attempting to setup one from the environment >&2
-	aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-	aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-	aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+	# echo Attempting to setup one from the environment >&2
+	# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+	# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 
 	if ! aws configure --profile $AWS_PROFILE list
 	then
