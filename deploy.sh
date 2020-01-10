@@ -96,9 +96,13 @@ then
 		exit 1
 	fi
 	echo Attempting to setup one from the environment >&2
-	aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-	aws configure --profile ${PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-	aws configure --profile ${PROFILE} set region ${AWS_REGION}
+	aws configure set profile.${PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
+	aws configure set profile.${PROFILE}}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	aws configure set profile.${PROFILE}.region ${AWS_REGION}
+
+	# aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+	# aws configure --profile ${PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	# aws configure --profile ${PROFILE} set region ${AWS_REGION}
 
 	if ! aws configure --profile $PROFILE list
 	then
