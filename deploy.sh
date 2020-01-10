@@ -138,16 +138,16 @@ test "$STAGE" == prod && export STAGE=""
 
 envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
-# https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
-# ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service up \
-# 	--target-group-arn ${BZFE_TARGET_ARN} \
-# 	--container-name bugzilla \
-# 	--container-port 80 \
-# 	--create-log-groups \
-# 	--deployment-max-percent 100 \
-# 	--deployment-min-healthy-percent 50 \
-# 	--timeout 7
+https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
+ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service up \
+	--target-group-arn ${BZFE_TARGET_ARN} \
+	--container-name bugzilla \
+	--container-port 80 \
+	--create-log-groups \
+	--deployment-max-percent 100 \
+	--deployment-min-healthy-percent 50 \
+	--timeout 7
 
-# ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service ps
+ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service ps
 
 echo "END $0 $(date)"
