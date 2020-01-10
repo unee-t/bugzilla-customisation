@@ -4,14 +4,11 @@
 # This script is called as part of the Travis CI deployment routine
 # We can use the default aws profile configured in Travis CI settings to get the variables we need
 
-#	aws configure set profile.${AWS_PROFILE}.aws_access_key_id ${AWS_ACCESS_KEY_ID}
-#	aws configure set profile.${AWS_PROFILE}.aws_secret_access_key ${AWS_SECRET_ACCESS_KEY}
-#	aws configure set profile.${AWS_PROFILE}.region ${AWS_DEFAULT_REGION}
-
 # We create a procedure to retrieve the variables from the AWS parameter store
 # Make sure to 
 #   - configure your AWS CLI accordingly
 #   - update the profile you need to use to access these variables if needed
+#	- PROFILE is set when .travis.yml run
 
 	getparam () {
 		aws --profile ${PROFILE} ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text

@@ -35,9 +35,9 @@ show_help() {
 cat << EOF
 Usage: ${0##*/}
 Deploy the BZFE and BZ code on AWS account
-	dev 	DEVELOPMENT	
-	prod	PRODUCTION
-	demo	DEMO
+	d 	DEVELOPMENT	
+	p	PRODUCTION
+	s	DEMO
 EOF
 }
 while getopts "pd" opt
@@ -102,9 +102,6 @@ then
 	aws configure set profile.${PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
 	aws configure set profile.${PROFILE}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 	aws configure set profile.${PROFILE}.region $AWS_DEFAULT_REGION
-	# aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-	# aws configure --profile ${PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-	# aws configure --profile ${PROFILE} set region ${AWS_REGION}
 	if ! aws configure --profile $PROFILE list
 	then
 	# We tell the user about the issue
