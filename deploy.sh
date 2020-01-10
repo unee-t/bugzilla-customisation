@@ -96,8 +96,14 @@ then
 		exit 1
 	fi
 	echo Attempting to setup one from the environment >&2
+	echo $AWS_ACCESS_KEY_ID
+	echo $AWS_SECRET_ACCESS_KEY
+	echo ${AWS_REGION}
+	echo confiuge access key
 	aws configure set profile.${PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
+	echo confiuge secret key
 	aws configure set profile.${PROFILE}}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	echo confiuge regon
 	aws configure set profile.${PROFILE}.region ${AWS_REGION}
 
 	# aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
