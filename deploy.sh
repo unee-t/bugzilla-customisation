@@ -42,6 +42,8 @@ EOF
 }
 echo Attempting to setup one from the environment >&2
 echo Setting AWS Configure
+cat ~/.aws/config
+cat ~/.aws/credentials
 aws --version
 # aws configure set profile.${AWS_PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
 # aws configure set profile.${AWS_PROFILE}.aws_secret_access_key $AWS_ACCESS_KEY_ID
