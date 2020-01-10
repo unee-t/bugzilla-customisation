@@ -5,15 +5,15 @@
 # We needs several variables that are maintained in different places:
 #	- Variables stored in the Travis CI "Settings":
 #	  These are needed so that automated deployment are working as intended
-#		- AWS_DEFAULT_REGION <--- This is probably overkill since we have this in aws-env.[stage] variables
-#		- AWS_PROFILE_DEV
-#		- AWS_PROFILE_PROD
-#		- AWS_PROFILE_DEMO
+#		- DEFAULT_REGION <--- This is probably overkill since we have this in aws-env.[stage] variables
+#		- PROFILE_DEV
+#		- PROFILE_PROD
+#		- PROFILE_DEMO
 #
 #	- Variables stored in the aws-env.[stage] file
 #		- STAGE
-#		- AWS_PROFILE
-#		- AWS_REGION
+#		- PROFILE
+#		- REGION
 #
 #	- Variables need to be set when 
 #		- Option 1: .travis.yml is called.
@@ -44,13 +44,6 @@ echo Attempting to setup one from the environment >&2
 echo Setting AWS Configure
 aws --version
 
-# aws configure set profile.${AWS_PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
-# aws configure set profile.${AWS_PROFILE}.aws_secret_access_key $AWS_ACCESS_KEY_ID
-# aws configure set profile.${AWS_PROFILE}.region ${AWS_REGION}
-
-# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
 # while getopts "pd" opt
 # do
 # 	case $opt in
@@ -90,42 +83,42 @@ aws --version
 # 	fi
 # done
 
-# This is in case there is no aws cli profile
-# in that case, the aws profile needs to be created from scratch.
-# This happens when:
-#	- We are doing a travis CI deployment.
-#	  We rely on the Travis CI settings that have been called when the
-#	  .travis.yml script is called.
-#	- The user has not configured his machine properly.
+# # This is in case there is no aws cli profile
+# # in that case, the aws profile needs to be created from scratch.
+# # This happens when:
+# #	- We are doing a travis CI deployment.
+# #	  We rely on the Travis CI settings that have been called when the
+# #	  .travis.yml script is called.
+# #	- The user has not configured his machine properly.
 
 
 # echo Attempting to setup one from the environment >&2
 # aws --version
-# echo $AWS_ACCESS_KEY_ID
-# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+# echo $ACCESS_KEY_ID
+# aws configure --profile ${PROFILE} set access_key_id $ACCESS_KEY_ID
+# aws configure --profile ${PROFILE} set secret_access_key $SECRET_ACCESS_KEY
+# aws configure --profile ${PROFILE} set region ${REGION}
 
-# if ! aws configure --profile $AWS_PROFILE list
+# if ! aws configure --profile $PROFILE list
 # then
 # 	# We tell the user about the issue
-# 	echo Profile $AWS_PROFILE does not exist >&2
+# 	echo Profile $PROFILE does not exist >&2
 
-# 	if ! test "$AWS_ACCESS_KEY_ID"
+# 	if ! test "$ACCESS_KEY_ID"
 # 	then
 # 	# We tell the user about the issue
-# 		echo Missing $AWS_ACCESS_KEY_ID >&2
+# 		echo Missing $ACCESS_KEY_ID >&2
 # 		exit 1
 # 	fi
-# 	# echo Attempting to setup one from the environment >&2
-# 	# aws configure --profile ${AWS_PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
-# 	# aws configure --profile ${AWS_PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-# 	# aws configure --profile ${AWS_PROFILE} set region ${AWS_REGION}
+# 	echo Attempting to setup one from the environment >&2
+# 	aws configure --profile ${PROFILE} set access_key_id $ACCESS_KEY_ID
+# 	aws configure --profile ${PROFILE} set secret_access_key $SECRET_ACCESS_KEY
+# 	aws configure --profile ${PROFILE} set region ${REGION}
 
-# 	if ! aws configure --profile $AWS_PROFILE list
+# 	if ! aws configure --profile $PROFILE list
 # 	then
 # 	# We tell the user about the issue
-# 		echo Profile $AWS_PROFILE does not exist on your machine >&2
+# 		echo Profile $PROFILE does not exist on your machine >&2
 # 		exit 1
 # 	fi
 
@@ -142,7 +135,7 @@ aws --version
 # 	ecs-cli -version
 # fi
 
-# ecs-cli configure --cluster master --region $AWS_REGION
+# ecs-cli configure --cluster master --region $REGION
 # test -f aws-env.$STAGE && source aws-env.$STAGE
 
 # service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
@@ -154,7 +147,7 @@ aws --version
 # envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
 # # https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
-# ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service up \
+# ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service up \
 # 	--target-group-arn ${BZFE_TARGET_ARN} \
 # 	--container-name bugzilla \
 # 	--container-port 80 \
@@ -163,6 +156,6 @@ aws --version
 # 	--deployment-min-healthy-percent 50 \
 # 	--timeout 7
 
-# ecs-cli compose --aws-profile $AWS_PROFILE -p ${service} -f docker-compose-${service}.yml service ps
+# ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service ps
 
 # echo "END $0 $(date)"
