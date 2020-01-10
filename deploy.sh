@@ -130,9 +130,8 @@ fi
 
 ecs-cli configure --cluster master --region $AWS_DEFAULT_REGION
 echo Try to get Params
-aws --profile ${AWS_PROFILE} ssm get-parameters --names "API_ACCESS_TOKEN" --with-decryption --query Parameters[0].Value --output text
-# test -f aws-env.$STAGE && source aws-env.$STAGE
-
+test -f aws-env.$STAGE && source aws-env.$STAGE
+echo $API_ACCESS_TOKEN
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
 echo Deploying $service with commit $COMMIT >&2
