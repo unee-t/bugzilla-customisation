@@ -45,12 +45,15 @@ do
 	case $opt in
 		d)
 			echo "DEVELOPMENT" >&2
+			STAGE=dev
 			;;
 		p)
 			echo "PRODUCTION" >&2
+			STAGE=prod
 			;;
 		s)
 			echo "DEMO" >&2
+			STAGE=demo
 			;;
 		*)
 			show_help >&2
