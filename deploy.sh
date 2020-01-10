@@ -138,7 +138,7 @@ test "$STAGE" == prod && export STAGE=""
 
 envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
-https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
+# https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
 ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service up \
 	--target-group-arn ${BZFE_TARGET_ARN} \
 	--container-name bugzilla \
