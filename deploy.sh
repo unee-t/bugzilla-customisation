@@ -127,7 +127,7 @@ else
 	ecs-cli -version
 fi
 
-ecs-cli configure --cluster master --region $AWS_REGION
+ecs-cli configure --cluster master --region $AWS_DEFAULT_REGION
 test -f aws-env.$STAGE && source aws-env.$STAGE
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
