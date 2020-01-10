@@ -99,9 +99,6 @@ then
 		exit 1
 	fi
 	echo Attempting to setup one from the environment >&2
-	echo $PROFILE
-	echo $AWS_ACCESS_KEY_ID
-	echo $AWS_SECRET_ACCESS_KEY
 	aws configure set profile.${PROFILE}.aws_access_key_id $AWS_ACCESS_KEY_ID
 	aws configure set profile.${PROFILE}.aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 	aws configure set profile.${PROFILE}.region $AWS_DEFAULT_REGION
