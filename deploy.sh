@@ -108,8 +108,6 @@ then
 	# aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
 	# aws configure --profile ${PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
 	# aws configure --profile ${PROFILE} set region ${AWS_REGION}
-	cat ~/.aws/config
-	cat ~/.aws/credentials
 	if ! aws configure --profile $PROFILE list
 	then
 	# We tell the user about the issue
@@ -131,7 +129,9 @@ else
 fi
 
 ecs-cli configure --cluster master --region $AWS_DEFAULT_REGION
-test -f aws-env.$STAGE && source aws-env.$STAGE
+echo Try to get Params
+aws --profile ${AWS_PROFILE} ssm get-parameters --names "API_ACCESS_TOKEN" --with-decryption --query Parameters[0].Value --output text
+# test -f aws-env.$STAGE && source aws-env.$STAGE
 
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
