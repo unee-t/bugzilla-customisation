@@ -5,7 +5,7 @@
 # We needs several variables that are maintained in different places:
 #	- Variables stored in the Travis CI "Settings":
 #	  These are needed so that automated deployment are working as intended
-#		- DEFAULT_REGION <--- This is probably overkill since we have this in aws-env.[stage] variables
+#		- AWS_DEFAULT_REGION <--- This is probably overkill since we have this in aws-env.[stage] variables
 #		- PROFILE_DEV
 #		- PROFILE_PROD
 #		- PROFILE_DEMO
@@ -13,7 +13,7 @@
 #	- Variables stored in the aws-env.[stage] file
 #		- STAGE
 #		- PROFILE
-#		- REGION
+#		- AWS_REGION
 #
 #	- Variables need to be set when 
 #		- Option 1: .travis.yml is called.
@@ -40,113 +40,98 @@ Deploy the BZFE and BZ code on AWS account
 	demo	DEMO
 EOF
 }
-echo Attempting to setup one from the environment >&2
-echo Setting AWS Configure
-aws --version
+while getopts "pd" opt
+do
+	case $opt in
+		d)
+			echo "DEVELOPMENT" >&2
+			;;
+		p)
+			echo "PRODUCTION" >&2
+			;;
+		s)
+			echo "DEMO" >&2
+			;;
+		*)
+			show_help >&2
+			exit 1
+			;;
+	esac
+done
 
-# while getopts "pd" opt
-# do
-# 	case $opt in
-# 		d)
-# 			echo "DEVELOPMENT" >&2
-# 			source aws-env.dev
-# 			;;
-# 		p)
-# 			echo "PRODUCTION" >&2
-# 			source aws-env.prod
-# 			;;
-# 		s)
-# 			echo "DEMO" >&2
-# 			source aws-env.demo
-# 			;;
-# 		*)
-# 			show_help >&2
-# 			exit 1
-# 			;;
-# 	esac
-# done
+shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
-# shift "$((OPTIND-1))"   # Discard the options and sentinel --
+export COMMIT=$(git rev-parse --short HEAD)
 
-# export COMMIT=$(git rev-parse --short HEAD)
+# Run deploy hooks
+for hook in deploy-hooks/*
+do
+	[[ -x $hook ]] || continue
+	if "$hook"
+	then
+		echo OK: "$hook"
+	else
+		echo FAIL: "$hook"
+		exit 1
+	fi
+done
 
-# # Run deploy hooks
-# for hook in deploy-hooks/*
-# do
-# 	[[ -x $hook ]] || continue
-# 	if "$hook"
-# 	then
-# 		echo OK: "$hook"
-# 	else
-# 		echo FAIL: "$hook"
-# 		exit 1
-# 	fi
-# done
+# This is in case there is no aws cli profile
+# in that case, the aws profile needs to be created from scratch.
+# This happens when:
+#	- We are doing a travis CI deployment.
+#	  We rely on the Travis CI settings that have been called when the
+#	  .travis.yml script is called.
+#	- The user has not configured his machine properly.
 
-# # This is in case there is no aws cli profile
-# # in that case, the aws profile needs to be created from scratch.
-# # This happens when:
-# #	- We are doing a travis CI deployment.
-# #	  We rely on the Travis CI settings that have been called when the
-# #	  .travis.yml script is called.
-# #	- The user has not configured his machine properly.
+if ! aws configure --profile $PROFILE list
+then
+	# We tell the user about the issue
+	echo Profile $PROFILE does not exist >&2
 
+	if ! test "$AWS_ACCESS_KEY_ID"
+	then
+	# We tell the user about the issue
+		echo Missing $AWS_ACCESS_KEY_ID >&2
+		exit 1
+	fi
+	echo Attempting to setup one from the environment >&2
+	aws configure --profile ${PROFILE} set aws_access_key_id $AWS_ACCESS_KEY_ID
+	aws configure --profile ${PROFILE} set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+	aws configure --profile ${PROFILE} set region ${AWS_REGION}
 
-# echo Attempting to setup one from the environment >&2
-# aws --version
-# echo $ACCESS_KEY_ID
-# aws configure --profile ${PROFILE} set access_key_id $ACCESS_KEY_ID
-# aws configure --profile ${PROFILE} set secret_access_key $SECRET_ACCESS_KEY
-# aws configure --profile ${PROFILE} set region ${REGION}
+	if ! aws configure --profile $PROFILE list
+	then
+	# We tell the user about the issue
+		echo Profile $PROFILE does not exist on your machine >&2
+		exit 1
+	fi
 
-# if ! aws configure --profile $PROFILE list
-# then
-# 	# We tell the user about the issue
-# 	echo Profile $PROFILE does not exist >&2
+fi
+aws configure --profile $PROFILE list
+if ! hash ecs-cli
+then
+	# We tell the user about the issue
+	echo Please install https://github.com/aws/amazon-ecs-cli and ensure it is in your \$PATH
+	echo curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
+	exit 1
+else
+	# We display the current version intalled on the user's machine.
+	ecs-cli -version
+fi
 
-# 	if ! test "$ACCESS_KEY_ID"
-# 	then
-# 	# We tell the user about the issue
-# 		echo Missing $ACCESS_KEY_ID >&2
-# 		exit 1
-# 	fi
-# 	echo Attempting to setup one from the environment >&2
-# 	aws configure --profile ${PROFILE} set access_key_id $ACCESS_KEY_ID
-# 	aws configure --profile ${PROFILE} set secret_access_key $SECRET_ACCESS_KEY
-# 	aws configure --profile ${PROFILE} set region ${REGION}
+ecs-cli configure --cluster master --region $AWS_REGION
+test -f aws-env.$STAGE && source aws-env.$STAGE
 
-# 	if ! aws configure --profile $PROFILE list
-# 	then
-# 	# We tell the user about the issue
-# 		echo Profile $PROFILE does not exist on your machine >&2
-# 		exit 1
-# 	fi
+service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
+echo Deploying $service with commit $COMMIT >&2
 
-# fi
+# Ensure docker compose file's STAGE env is empty for production
+test "$STAGE" == prod && export STAGE=""
 
-# if ! hash ecs-cli
-# then
-# 	# We tell the user about the issue
-# 	echo Please install https://github.com/aws/amazon-ecs-cli and ensure it is in your \$PATH
-# 	echo curl -o /usr/local/bin/ecs-cli https://s3.amazonaws.com/amazon-ecs-cli/ecs-cli-linux-amd64-latest && chmod +x /usr/local/bin/ecs-cli
-# 	exit 1
-# else
-# 	# We display the current version intalled on the user's machine.
-# 	ecs-cli -version
-# fi
+envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
 
-# ecs-cli configure --cluster master --region $REGION
-# test -f aws-env.$STAGE && source aws-env.$STAGE
-
-# service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
-# echo Deploying $service with commit $COMMIT >&2
-
-# # Ensure docker compose file's STAGE env is empty for production
-# test "$STAGE" == prod && export STAGE=""
-
-# envsubst < AWS-docker-compose.yml > docker-compose-${service}.yml
-
-# # https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
+# https://github.com/aws/amazon-ecs-cli/issues/21#issuecomment-452908080
 # ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service up \
 # 	--target-group-arn ${BZFE_TARGET_ARN} \
 # 	--container-name bugzilla \
@@ -158,4 +143,4 @@ aws --version
 
 # ecs-cli compose --aws-profile $PROFILE -p ${service} -f docker-compose-${service}.yml service ps
 
-# echo "END $0 $(date)"
+echo "END $0 $(date)"
