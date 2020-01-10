@@ -1,10 +1,48 @@
-export BUGZILLA_URL=https://dashboard.demo.unee-t.com
-export MYSQL_DATABASE=bugzilla
-export MYSQL_HOST=db.demo.unee-t.com
-export MYSQL_PASSWORD=$(aws --profile uneet-demo ssm get-parameters --names MYSQL_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export MYSQL_PORT=3306
-export MYSQL_USER=bugzilla
-export PARAMS_URL=https://raw.githubusercontent.com/unee-t/bugzilla-customisation/master/params/demo-params.json
-export SES_SMTP_PASSWORD=$(aws --profile uneet-demo ssm get-parameters --names SES_SMTP_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-export SES_SMTP_USERNAME=$(aws --profile uneet-demo ssm get-parameters --names SES_SMTP_USERNAME --query Parameters[0].Value --output text)
-export SES_VERIFIED_SENDER=demo.case@unee-t.com
+#!/bin/bash
+## This file stores all environment variables for the DEV environment for this repo
+
+# This script is called as part of the Travis CI deployment routine
+# We can use the default aws profile configured in Travis CI settings to get the variables we need
+
+# We create a procedure to retrieve the variables from the AWS parameter store
+# Make sure to 
+#   - configure your AWS CLI accordingly
+#   - update the profile you need to use to access these variables if needed
+#	- PROFILE is set when .travis.yml run
+
+	getparam () {
+		aws --profile ${PROFILE} ssm get-parameters --names "$1" --with-decryption --query Parameters[0].Value --output text
+	}
+
+# Variables that are maintained in a dedicated file in this repo:
+
+	export PARAMS_URL=https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/demo-params.json
+
+# We prepare the hardcoded variables that we will need to deploy what's needed
+
+    export STAGE=demo
+
+# Variables that are maintained in the AWS parameter store for the environment:
+
+    export AWS_REGION=$(getparam DEFAULT_REGION)
+	export DOMAIN=$(getparam DOMAIN)
+	export INSTALLATION_ID=$(getparam INSTALLATION_ID)
+
+	export API_ACCESS_TOKEN=$(getparam API_ACCESS_TOKEN)
+
+	export MYSQL_USER=$(getparam BUGZILLA_DB_USER)
+	export MYSQL_DATABASE=$(getparam BUGZILLA_DB_NAME)
+	export MYSQL_HOST=$(getparam MYSQL_HOST)
+	export MYSQL_PASSWORD=$(getparam BUGZILLA_DB_PASSWORD)
+	export MYSQL_PORT=$(getparam MYSQL_PORT)
+
+	export SES_SMTP_PASSWORD=$(getparam SES_SMTP_PASSWORD)
+	export SES_SMTP_USERNAME=$(getparam SES_SMTP_USERNAME)
+	export SES_VERIFIED_SENDER=$(getparam SES_VERIFIED_SENDER)
+
+	export BZFE_TARGET_ARN=$(getparam BZFE_TARGET_ARN)
+
+# Variables that are built from other variables:
+
+    export AWS_PROFILE=$INSTALLATION_ID-$STAGE
+	export BZDB_CHECK_HOST=dbcheck.$DOMAIN
