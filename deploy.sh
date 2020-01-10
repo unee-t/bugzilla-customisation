@@ -131,9 +131,8 @@ else
 fi
 
 ecs-cli configure --cluster master --region $AWS_DEFAULT_REGION
-cat aws-env.$STAGE
 test -f aws-env.$STAGE && source aws-env.$STAGE
-echo $STAGE
+
 
 service=$(grep -A1 services AWS-docker-compose.yml | tail -n1 | tr -cd '[[:alnum:]]')
 echo Deploying $service with commit $COMMIT >&2
