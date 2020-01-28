@@ -5,21 +5,22 @@ NC='\033[0m' # No Color
 for stage in dev prod demo
 do
 	echo "--> $stage <--"
-	aws --profile uneet-$stage ecs list-clusters | jq -r .clusterArns[] | while read cluster
+	source aws-env.$stage
+	aws --profile $AWS_PROFILE ecs list-clusters | jq -r .clusterArns[] | while read cluster
 	do
 			echo cluster: $cluster
-	aws --profile uneet-$stage ecs list-services --cluster $cluster | jq -r .serviceArns[] | while read service
+	aws --profile $AWS_PROFILE ecs list-services --cluster $cluster | jq -r .serviceArns[] | while read service
 	do
-		echo aws --profile uneet-$stage ecs describe-services --cluster $cluster --services $service
-		aws --profile uneet-$stage ecs describe-services --cluster $cluster --services $service | jq -r ".services[].loadBalancers[].targetGroupArn" | 
+		echo aws --profile $AWS_PROFILE ecs describe-services --cluster $cluster --services $service
+		aws --profile $AWS_PROFILE ecs describe-services --cluster $cluster --services $service | jq -r ".services[].loadBalancers[].targetGroupArn" | 
 			while read target
 			do
 				echo target $target
-				aws --profile uneet-$stage elbv2 describe-target-groups --target-group-arns $target
-				aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target
+				aws --profile $AWS_PROFILE elbv2 describe-target-groups --target-group-arns $target
+				aws --profile $AWS_PROFILE elbv2 describe-target-group-attributes --target-group-arn $target
 				if echo $target | grep bugzilla
 				then
-					stickiness=$(aws --profile uneet-$stage elbv2 describe-target-group-attributes --target-group-arn $target | 
+					stickiness=$(aws --profile $AWS_PROFILE elbv2 describe-target-group-attributes --target-group-arn $target | 
 						jq -r '.Attributes| from_entries."stickiness.enabled"')
 					if test $stickiness != "true"
 					then

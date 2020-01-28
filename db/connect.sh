@@ -1,38 +1,70 @@
 #!/bin/bash
 
-STAGE=dev
+# This script creates dependencies to facilitate connection to the BZ Db
+#
+# We needs several variables that are maintained in different places:
+#
+# We needs several variables that are maintained in different places:
+#	- Variables stored in the Travis CI "Settings":
+#		n/a
+#	- Variables stored in the aws-env.[stage] file
+#		- STAGE
+#		- MYSQL_HOST
+#		- MYSQL_PORT
+#		- MYSQL_USER
+#		- MYSQL_PASSWORD
+#		- MYSQL_DATABASE
 
 domain() {
-	case $1 in
-		prod) echo auroradb.unee-t.com
-		;;
-		*) echo auroradb.$1.unee-t.com
-		;;
+	case $1 in		
+		dev)
+			echo "DEVELOPMENT" >&2
+			source aws-env.dev
+			echo $MYSQL_HOST
+			;;
+		prod) 
+			echo "PRODUCTION" >&2
+			source aws-env.prod
+			echo $MYSQL_HOST
+			;;
+		demo)
+			echo "DEMO" >&2
+			source aws-env.demo
+			echo $MYSQL_HOST
+			;;
+		*)
+			show_help >&2
+			exit 1
+			;;
 	esac
 }
 
+# Usage info
 show_help() {
 cat << EOF
 Usage: ${0##*/} [-p]
 
-By default, deploy to dev environment on AWS account 812644853088
-
-	-p          PRODUCTION 192458993663
-	-d          DEMO 915001051872
-
+Connection to the BZ database
+	-dev		DEVELOPMENT	
+	-prod		PRODUCTION
+	-demo		DEMO
 EOF
 }
 
 while getopts "pd" opt
 do
 	case $opt in
-		p)
-			echo "PRODUCTION" >&2
-			STAGE=prod
+		dev)
+			echo "DEVELOPMENT" >&2
+			source aws-env.dev
 			;;
-		d)
+		prod)
+			echo "PRODUCTION" >&2
+			source aws-env.prod
+			;;
+		demo)
 			echo "DEMO" >&2
-			STAGE=demo
+			source aws-env.demo
 			;;
 		*)
 			show_help >&2
@@ -40,14 +72,11 @@ do
 			;;
 	esac
 done
-AWS_PROFILE=uneet-$STAGE
+
 shift "$((OPTIND-1))"   # Discard the options and sentinel --
 
 echo Connecting to ${STAGE^^} $(domain $STAGE)
 
-MYSQL_PASSWORD=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_ROOT_PASSWORD --with-decryption --query Parameters[0].Value --output text)
-MYSQL_USER=$(aws --profile $AWS_PROFILE ssm get-parameters --names MYSQL_USER --with-decryption --query Parameters[0].Value --output text)
-
 echo $STAGE
-echo mysql -s -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla
-mysql -s -h $(domain $STAGE) -P 3306 -u root --password=$MYSQL_PASSWORD bugzilla
+echo mysql -s -h $MYSQL_HOST -P $MYSQL_PORT -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE
+mysql -s -h $MYSQL_HOST -P $MYSQL_PORT -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE

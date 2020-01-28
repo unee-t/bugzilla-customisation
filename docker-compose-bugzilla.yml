@@ -11,15 +11,15 @@ services:
         ports:
             - 80:80
         environment:
-            SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
-            SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
-            SES_VERIFIED_SENDER: ${SES_VERIFIED_SENDER}
-            MYSQL_HOST: ${MYSQL_HOST}
-            MYSQL_PORT: ${MYSQL_PORT}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-            PARAMS_URL: ${PARAMS_URL}
+            SES_SMTP_USERNAME: AKIASU5ZFFAA6XHV73VH
+            SES_SMTP_PASSWORD: BDtrOVQy+42xiR70WfkQWbJA1v0/HHA/k6brk9yuPIry
+            SES_VERIFIED_SENDER: dev.dashboard.ins@unee-t.com
+            MYSQL_HOST: bzdb.dev.ins.unee-t.com
+            MYSQL_PORT: 3306
+            MYSQL_DATABASE: bugzilla
+            MYSQL_USER: bugzilla
+            MYSQL_PASSWORD: Dnm33)^7}ZhX,E)]
+            PARAMS_URL: https://raw.githubusercontent.com/Unee-T-INS/bugzilla-customisation/master/params/dev-params.json
         logging:
             driver: awslogs
             options:

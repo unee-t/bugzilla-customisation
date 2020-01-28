@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# We need to remove hard coded variables from there.
+# We need to update this like we updated ./deploy.sh
+
 STAGE=dev
 
 show_help() {
