@@ -25,7 +25,6 @@ pull:
 	docker-compose pull
 
 mysqlogin:
-	.env
 	mysql -h 127.0.0.1 -P ${MYSQL_PORT} -u ${MYSQL_BZ_USER} --password=${MYSQL_PASSWORD_BZ_USER} ${MYSQL_DATABASE}
 
 clean:
