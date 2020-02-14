@@ -1,4 +1,17 @@
-version: '2'
+# This creates some of the things to run Unee-T Locally
+# WARNING: Local environments are LIMITED and are only good to tweak the UI.
+# Find more information in the README file for this repo.
+
+# Pre-Requisite:
+#   The following Docker images MUST exist on DockerHub!
+#       - uneet/frontend
+#       - uneet/bugzilla-customisation
+#       - uneet/apienroll
+#       - uneet/unit
+#       - uneet/invite
+#   You MUST have cloned the repo `https://github.com/unee-t/bz-database` on the local machine
+
+version: '2.1'
 services:
     bugzilla:
         image: uneet/bugzilla-customisation
@@ -29,7 +42,7 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         volumes:
-            - /home/hendry/unee-t/bugzilla-customisation/demo-baseline.sql:/docker-entrypoint-initdb.d/main.sql
+            - /home/$${USER}/${BZDB_SEED_SOURCE}/db snapshots/unee-t_BZDb_clean_with_demo_users_and_unit_current.sql:/docker-entrypoint-initdb.d/main.sql
             - ./sql-conf.d:/etc/mysql/conf.d
 
     adminer:
