@@ -23,7 +23,7 @@
 
 	# It is OK to keep the default values included here
 		API_ACCESS_TOKEN=theMainUneeTApiToken
-		MYSQL_HOST=MYSQL_DATABASE
+		MYSQL_HOST=db
 		MYSQL_DATABASE=bzfe
 		MYSQL_BZ_USER=bzfe
 		MYSQL_PASSWORD_BZ_USER=myBzfePassword

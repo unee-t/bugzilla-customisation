@@ -83,7 +83,7 @@ services:
             - 4000:9000
         environment:
             PORT: 9000
-            MYSQL_HOST: db
+            MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
@@ -94,7 +94,7 @@ services:
             - 4001:9000
         environment:
             PORT: 9000
-            MYSQL_HOST: db
+            MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
@@ -105,7 +105,7 @@ services:
             - 4002:9000
         environment:
             PORT: 9000
-            MYSQL_HOST: db
+            MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
