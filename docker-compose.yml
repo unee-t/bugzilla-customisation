@@ -11,7 +11,7 @@
 #       - uneet/invite
 #   You MUST have cloned the repo `https://github.com/unee-t/bz-database` on the local machine
 
-version: '2.1'
+version: '2'
 services:
     bugzilla:
         image: uneet/bugzilla-customisation
