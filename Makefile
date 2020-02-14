@@ -1,5 +1,5 @@
 .env:
-	./setup-env.sh
+	./local-env-setup.bash
 
 up: .env
 	docker-compose up
