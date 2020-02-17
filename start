@@ -1,10 +1,26 @@
 #!/bin/sh -e
 
-envsubst < /etc/msmtprc.temp > /etc/msmtprc
+echo "***************************************************"
+echo "This is the beginning of the `./start` script"
+echo "***************************************************"
+echo "We are using the following variables:"
+echo "- MYSQL_HOST: "${MYSQL_HOST}
+echo "- MYSQL_PORT: "${MYSQL_PORT}
+echo "- MYSQL_DATABASE: "${MYSQL_DATABASE}
+echo "- MYSQL_USER: "${MYSQL_USER}
+echo "- MYSQL_PASSWORD: hidden for security reasons"
+echo "- PARAMS_URL: "${PARAMS_URL}
 
+echo "setting up parameters for local email"
+envsubst < /etc/msmtprc.temp > /etc/msmtprc
+echo "DONE - setting up parameters for local email"
+
+echo "switch to the folder where we have installed BZ"
 cd /opt/bugzilla
+echo "DONE - switch to the folder where we have installed BZ"
 
 # Substitute values into bugzilla localconfig
+echo "Substitute values into bugzilla localconfig"
 sed --in-place -f - localconfig <<SED
 s/db_host *= *'[a-zA-Z0-9.]\+'/db_host = '${MYSQL_HOST}'/
 s/db_port *= *[0-9.]\+/db_port = ${MYSQL_PORT}/
@@ -13,27 +29,50 @@ s/db_user *= *'[a-zA-Z0-9.]\+'/db_user = '${MYSQL_USER}'/
 s/db_pass\s*=\s*'[^']*'/db_pass = '${MYSQL_PASSWORD}'/
 s/webservergroup *= *'[a-zA-Z0-9]\+'/webservergroup = 'www-data'/
 SED
+echo "DONE - Substitute values into bugzilla localconfig"
 
 echo "Removing rederive_regex_groups() call"
 sed -i '/_rederive_regex_groups();/d' /opt/*/Bugzilla/Install/DB.pm
+echo "DONE - Removing rederive_regex_groups() call"
 
+echo "Prepare the folder and parameter we need to configure BZ"
 mkdir -p /opt/bugzilla/data/assets
 PARAMS=/opt/bugzilla/data/params.json
+echo "DONE - Prepare the folder and parameter we need to configure BZ"
+
+echo "Get the parameters we need for the BZ configuration"
+echo "we are using the file ${PARAMS_URL} as the source"
 curl -f -o $PARAMS "${PARAMS_URL}"
+echo "DONE - Get the parameters we need for the BZ configuration"
+
+echo "Check if we have the file we need to configure Bugzilla"
 if ! test -f $PARAMS
 then
 	"${PARAMS_URL}" failed to download
 	exit 1
 fi
+echo "DONE - Check if we have the file we need to configure Bugzilla"
+
+echo "Pretty print the parameters we have configured."
 jq -c . $PARAMS
+echo "DONE - Pretty print the parameters we have configured."
+
+echo "Make sure permission and ownersip are correct"
 chmod -R g+rwx /opt/bugzilla/data
 chown -R :www-data /opt/bugzilla/data
+echo "DONE - Make sure permission and ownersip are correct"
 
+echo "run the Bugzilla .checksetup script"
 ./checksetup.pl bugzilla_admin
+echo "DONE - run the Bugzilla .checksetup script"
 
 # Start apache2
+echo "Start apache2"
 . /etc/apache2/envvars
+echo "DONE - Start apache2"
 
+# Make sure we capture and display the version of the commit that we have just deployed
+echo "Make sure we capture and display the version of the commit that we have just deployed"
 BZ_COMMIT=$(git --git-dir=/opt/bugzilla/.git describe --always)
 echo BZ_COMMIT: $BZ_COMMIT
 
@@ -45,9 +84,16 @@ then
 fi
 sed -i "s/header_addl_info.*/header_addl_info = \"$BZ_COMMIT\"/g" $TEMPLATE
 grep header_addl_info $TEMPLATE
+echo "DONE - Make sure we capture and display the version of the commit that we have just deployed"
 
 # Tweak mod_perl performance to allow it 400MB of RAM
+echo "Final tweaks"
 sed -i 's,Apache2::SizeLimit->set_max_unshared_size(45_000);,Apache2::SizeLimit->set_max_unshared_size(400_000);,' /opt/bugzilla/mod_perl.pl
 
 /usr/sbin/apache2 -D FOREGROUND
 #/bin/bash -c "while true; do sleep 1; done"
+echo "DONE - Final tweaks"
+
+echo "***********************"
+echo "DONE `./start` script"
+echo "***********************"

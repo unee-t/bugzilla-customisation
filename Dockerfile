@@ -1,5 +1,4 @@
 FROM ubuntu
-MAINTAINER Kai Hendry <kai.hendry@unee-t.com>
 
 # BEGIN STUFF THAT SHOULD BE IN A BASE IMAGE
 RUN apt-get update
