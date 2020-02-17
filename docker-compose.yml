@@ -16,8 +16,6 @@ services:
     bugzilla:
         image: uneet/bugzilla-customisation
         restart: on-failure
-        ports:
-            - 8081:80
         environment: # Setup by local .env file
             SES_SMTP_USERNAME: ${SES_SMTP_USERNAME}
             SES_SMTP_PASSWORD: ${SES_SMTP_PASSWORD}
@@ -29,18 +27,21 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             PARAMS_URL: ${PARAMS_URL}
+        ports:
+            - 8081:80
         depends_on:
             - db
 
     db:
         image: mysql:5.7
-        ports:
-            - 3306:3306
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_PORT: ${MYSQL_PORT}
+        ports:
+            - 3306:3306
         volumes:
             - /home/hendry/unee-t/bugzilla-customisation/demo-baseline.sql:/docker-entrypoint-initdb.d/main.sql
             #- /home/$${USER}/${BZDB_SEED_SOURCE}/db snapshots/unee-t_BZDb_clean_with_demo_users_and_unit_current.sql:/docker-entrypoint-initdb.d/main.sql
@@ -56,8 +57,6 @@ services:
     mefe: #aka frontend, CASE_HOST
         image: uneet/frontend
         restart: always
-        ports:
-            - 3000:3000
         depends_on:
             - mongo
             - bugzilla
@@ -72,6 +71,8 @@ services:
             APIENROLL_LAMBDA_URL: http://apienroll:9000
             UNIT_CREATE_LAMBDA_URL: http://unit:9000
             INVITE_LAMBDA_URL: http://invite:9000
+        ports:
+            - 3000:3000
 
     mongo:
         image: mongo
@@ -80,30 +81,28 @@ services:
 
     apienroll:
         image: uneet/apienroll
-        ports:
-            - 4000:9000
         environment:
             PORT: 9000
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+        ports:
+            - 4000:9000
 
     unit:
         image: uneet/unit
-        ports:
-            - 4001:9000
         environment:
             PORT: 9000
             MYSQL_HOST: ${MYSQL_HOST}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
+        ports:
+            - 4001:9000
 
     invite:
         image: uneet/invite
-        ports:
-            - 4002:9000
         environment:
             PORT: 9000
             MYSQL_HOST: ${MYSQL_HOST}
@@ -111,3 +110,5 @@ services:
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             API_ACCESS_TOKEN: ${API_ACCESS_TOKEN}
             CASE_HOST: http://mefe:3000
+        ports:
+            - 4002:9000    
