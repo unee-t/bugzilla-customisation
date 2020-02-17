@@ -1,8 +1,15 @@
 #!/bin/sh -e
 
 echo "***************************************************"
-echo "Edit what's happening here in the file ./start"
+echo "This is the beginning of the `./start` script"
 echo "***************************************************"
+echo "We are using the following variables:"
+echo "- MYSQL_HOST: "${MYSQL_HOST}
+echo "- MYSQL_PORT: "${MYSQL_PORT}
+echo "- MYSQL_DATABASE: "${MYSQL_DATABASE}
+echo "- MYSQL_USER: "${MYSQL_USER}
+echo "- MYSQL_PASSWORD: hidden for security reasons"
+echo "- PARAMS_URL: "${PARAMS_URL}
 
 echo "setting up parameters for local email"
 envsubst < /etc/msmtprc.temp > /etc/msmtprc
@@ -87,6 +94,6 @@ sed -i 's,Apache2::SizeLimit->set_max_unshared_size(45_000);,Apache2::SizeLimit-
 #/bin/bash -c "while true; do sleep 1; done"
 echo "DONE - Final tweaks"
 
-echo "*******************"
-echo "DONE file ./start"
-echo "*******************"
+echo "***********************"
+echo "DONE `./start` script"
+echo "***********************"
